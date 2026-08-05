@@ -1,9 +1,24 @@
-import { CopywriterInput, CopywriterOutput, CreativeDesignerInput, CreativeDesignerOutput, CreativeAsset } from "@/types/ai-employees";
+import { 
+  CopywriterInput, 
+  CopywriterOutput, 
+  CreativeDesignerInput, 
+  CreativeDesignerOutput, 
+  CreativeAsset,
+  VideoCreatorInput,
+  VideoCreatorOutput,
+  VideoScene,
+  AdsManagerInput,
+  AdsManagerOutput,
+  CampaignRecommendation,
+  CampaignDashboardItem
+} from "@/types/ai-employees";
 
 const DB_KEY_COPYWRITER = "bosque_ai_copywriter_history_v1";
 const DB_KEY_CREATIVE = "bosque_ai_creative_history_v1";
+const DB_KEY_VIDEO = "bosque_ai_video_history_v1";
+const DB_KEY_ADS = "bosque_ai_ads_history_v1";
 
-// Default Initial History for Copywriter
+// --- COPYWRITER ---
 const INITIAL_COPYWRITER_HISTORY: CopywriterOutput[] = [
   {
     id: "cp-sample-1",
@@ -101,39 +116,19 @@ const INITIAL_COPYWRITER_HISTORY: CopywriterOutput[] = [
         urgencyText: "⚡ Stok Promo Tersisa 27 Botol Lagi Untuk Hari Ini!"
       }
     },
-    marketplaceDescription: `🌟 GLOWSKIN TRIPLE C VITAMIN SERUM 20ML 🌟
-100% ORIGINAL | BPOM APPROVED (NA18230199887) | HALAL CERTIFIED
-
-Apakah kamu punya masalah kulit kusam, noda hitam, atau garis halus? 
-GlowSkin Triple C Serum adalah jawaban sempurna untuk mengembalikan kecerahan alami kulitmu!
-
-KEUNGGULAN PRODUK:
-- Micro-Encapsulated Technology: Mengunci keaktifan Vitamin C agar tidak cepat teroksidasi.
-- Triple Action Formula: Mencerahkan, Menghidrasi, dan Meremajakan kulit.
-- Ringan & Cepat Meresap: Tidak lengket dan sangat nyaman dipakai pagi & malam.
-
-CARA PENGGUNAAN:
-1. Bersihkan wajah dengan cleanser.
-2. Teteskan 3-4 tetes GlowSkin Serum pada telapak tangan/wajah.
-3. Usap merata dan tepuk-tepuk lembut hingga meresap sempurna.
-4. Gunakan moisturizer dan sunscreen di pagi hari.
-
-Dapatkan BONUS Pouch Skincare Eksklusif untuk 100 Pembeli Pertama Hari Ini!
-Yuk checkout sekarang sebelum kehabisan stok!`,
+    marketplaceDescription: `🌟 GLOWSKIN TRIPLE C VITAMIN SERUM 20ML 🌟\n100% ORIGINAL | BPOM APPROVED (NA18230199887) | HALAL CERTIFIED`,
     emailMarketing: [
       {
         subject: "[Rahasia] Cara Memudarkan Flek Hitam Dalam 7 Hari Tanpa Klinik 🤫",
-        body: "Halo Sis,\n\nPernahkah kamu merasa kurang percaya diri saat bercermin karena noda hitam atau kulit kusam yang sulit hilang?\n\nKami mengerti betapa melelahkannya mencoba berbagai produk skincare yang menjanjikan hasil cepat namun berujung kekecewaan.\n\nItulah mengapa kami menciptakan GlowSkin Vitamin C Serum! Dengan kombinasi Micro-Encapsulated Vitamin C dan Hyaluronic 3D, kulit kamu bisa kembali sehat, kenyal, dan glowing secara alami.\n\nKhusus untuk pembaca email ini, dapatkan Diskon Rahasia 50% + Free Shipping dengan memasukan kode: GLOWSECRET saat checkout.\n\nKlik tombol di bawah ini untuk mengklaim promo kamu sekarang!"
+        body: "Halo Sis,\n\nPernahkah kamu merasa kurang percaya diri saat bercermin karena noda hitam atau kulit kusam yang sulit hilang?"
       }
     ],
     whatsAppBroadcast: [
-      "Halo Sis! 👋 Ada kabar gembira buat kamu yang pengen wajah glowing bening bebas flek hitam!\n\nGlowSkin Serum lagi ada PROMO KILAT DISKON 50% harganya cuma Rp 149.000 aja (Harga normal Rp 299.000)! 😱\n\nStok terbatas cuma buat 30 pembeli pertama hari ini. Mau amankan kupon diskonnya sekarang?",
-      "Sis, mau tanya dong... Masih sering kesel sama noda kusam di wajah yang susah hilang? 🥲\n\nNyobain GlowSkin Triple C Serum yuk! Sudah terbukti 98% pelanggan kami merasa kulit lebih cerah & kenyal dalam 7 hari.\n\nOrder hari ini dapet GRATIS ONGKIR + BONUS pouch eksklusif! Balas 'MAU' untuk pesan yaa ✨"
+      "Halo Sis! 👋 Ada kabar gembira buat kamu yang pengen wajah glowing bening bebas flek hitam!"
     ]
   }
 ];
 
-// Helper to get Copywriter history
 export function getCopywriterHistory(): CopywriterOutput[] {
   if (typeof window === "undefined") return INITIAL_COPYWRITER_HISTORY;
   try {
@@ -144,12 +139,10 @@ export function getCopywriterHistory(): CopywriterOutput[] {
     }
     return JSON.parse(data);
   } catch (e) {
-    console.error("Failed to read copywriter history:", e);
     return INITIAL_COPYWRITER_HISTORY;
   }
 }
 
-// Save Copywriter Result
 export function saveCopywriterResult(item: CopywriterOutput): CopywriterOutput[] {
   const current = getCopywriterHistory();
   const updated = [item, ...current];
@@ -159,133 +152,16 @@ export function saveCopywriterResult(item: CopywriterOutput): CopywriterOutput[]
   return updated;
 }
 
-// Generate Copywriter Content (Mock AI Engine)
 export function generateCopywriterAI(input: CopywriterInput): CopywriterOutput {
   const { product, targetCustomer, painPoint, price, usp, tone } = input;
-
   const tonePrefix = 
     tone === 'Hard Selling' ? '🔥 PROMO GEMPAR! ' :
     tone === 'Premium' ? '✨ Exclusive Elegance: ' :
     tone === 'Emotional' ? '💖 Sentuhan Kasih: ' :
     tone === 'Soft Selling' ? '💡 Tahukah Kamu? ' : '🚀 VIRAL ALERT! ';
 
-  const hooks: string[] = [
-    `${tonePrefix}Stoppp beli ${product} yang biasa aja kalau kamu belum tau teknologi USP ini!`,
-    `Siapa lagi yang mau mengatasi ${painPoint} tanpa perlu keluar biaya mahal?`,
-    `Awas ketagihan! Ini alasan kenapa ${product} lagi jadi perbincangan hangat di kalangan ${targetCustomer}.`,
-    `Jujur, kamu udah berapa kali coba produk tapi ${painPoint} tetep gak sembuh-sembuh?`,
-    `Hanya ${price}! Kembalikan senyum percaya dirimu dengan ${product}.`,
-    `Resep rahasia ${targetCustomer} tampil makin keren dan bebas dari masalah ${painPoint}.`,
-    `Bayangkan jika dalam hitungan hari, ${painPoint} kamu hilang total berkat ${usp}!`,
-    `Tolong jangan abaikan pesan ini kalau kamu termasuk ${targetCustomer}!`,
-    `Gak nyangka ${price} bisa dapet kualitas ${product} berkelas dunia kayak gini!`,
-    `Solusi radikal buat kamu yang udah capek sama ${painPoint}. Wajib kepoin!`,
-    `VIRAL! Kenapa ${targetCustomer} pada rebutan produk ${product} ini?`,
-    `Jangan sampai nyesel belakangan karena kehabisan stok promo ${product}!`,
-    `Tips instan mengakhiri masalah ${painPoint} dengan formula ${usp}.`,
-    `Apakah kamu salah satu ${targetCustomer} yang butuh perubahan nyata hari ini?`,
-    `Rahasia terbongkar! Ini cara ampuh terbebas dari ${painPoint} tanpa ribet.`,
-    `Review jujur pengguna ${product}: Hasilnya beneran di luar ekspektasi!`,
-    `Cuma ${price} hari ini! Investasi terbaik untuk penampilan & kenyamananmu.`,
-    `Kalau kamu punya masalah ${painPoint}, ini produk yang tak boleh kamu lewati.`,
-    `Gak perlu khawatir lagi! ${product} hadir membawa keunggulan ${usp}.`,
-    `Spesial promo kilat! Dapatkan ${product} dengan penawaran fantastis hari ini!`
-  ];
-
-  const headlines: string[] = [
-    `${product}: Solusi Terbaik Mengatasi ${painPoint} Secara Efektif!`,
-    `Dapatkan ${product} Sekarang Dengan Harga Spesial ${price}`,
-    `Inovasi Unggulan ${usp} Khusus Untuk ${targetCustomer}`,
-    `Bebas dari ${painPoint} Lebih Cepat & Aman Bersama ${product}`,
-    `Tingkatkan Kualitas Hidupmu Bersama ${product} Sekarang Juga!`,
-    `Nikmati Keunggulan ${usp} Dalam Satu Genggaman Anda`,
-    `Pilihan Utama Para ${targetCustomer}: ${product} Berkualitas Premium`,
-    `Say Goodbye Pada ${painPoint} Dan Rasakan Perubahan Nyata!`,
-    `Hemat Luar Biasa! Dapatkan ${product} Cuma ${price}`,
-    `${product} - Rahasia Keberhasilan Mengatasi ${painPoint}`,
-    `Formulasi Teruji ${usp} Untuk Hasil Maksimal Tanpa Kompromi`,
-    `Ubah Penampilan & Harimu Bersama ${product} Pilihan Terbaik`,
-    `Terbukti Efektif! ${product} Solusi Tepat Masalah ${painPoint}`,
-    `Pesan ${product} Hari Ini & Klaim Bonus Eksklusif Khusus Pelanggan`,
-    `Teknologi Terbaru ${usp} Dalam ${product} Yang Mengagumkan`,
-    `Jangan Biarkan ${painPoint} Mengganggu Aktivitasmu Lagi!`,
-    `Pilihan Cerdas ${targetCustomer} Indonesia: ${product}`,
-    `Kemudahan & Hasil Nyata Dalam Satu Produk ${product}`,
-    `Harga Terbaik ${price} Untuk Kualitas ${product} Terbaik`,
-    `Bergabunglah Bersama Ribuan Pengguna ${product} Yang Puas!`
-  ];
-
-  const primaryTextMetaAds = [
-    `Apakah kamu merasa lelah dengan masalah ${painPoint}? 😔\n\nKini hadir ${product}, solusi inovatif yang dirancang khusus untuk ${targetCustomer}. Dengan keunggulan ${usp}, produk ini siap memberikan hasil nyata yang memuaskan!\n\n✨ Mengapa Harus Pilih ${product}?\n✅ Efektif mengatasi ${painPoint}\n✅ Kualitas terjamin dengan harga terjangkau (${price})\n✅ Dipercaya oleh ribuan pelanggan puas!\n\n🔥 Promo terbatas hari ini! Klik tombol 'Beli Sekarang' dan dapatkan penawaran spesial sebelum harga kembali normal!`,
-    `Impian kamu untuk bebas dari ${painPoint} akhirnya jadi kenyataan! 🌟\n\nDengan ${product}, kamu bisa merasakan manfaat ${usp} secara maksimal. Khusus untuk ${targetCustomer} yang menginginkan solusi praktis, cepat, dan terbukti aman.\n\nDapatkan penawaran istimewa seharga ${price} saja hari ini. Stok sangat terbatas, order sekarang!`
-  ];
-
-  const landingPage = {
-    heroSection: {
-      badge: `🔥 PILIHAN UTAMA ${targetCustomer.toUpperCase()}`,
-      h1: `Atasi ${painPoint} Secara Efektif Dengan ${product}`,
-      subheadline: `Hadir dengan keunggulan ${usp}. Solusi cepat, aman, dan terjangkau hanya ${price}.`,
-      ctaButton: `PESAN ${product.toUpperCase()} SEKARANG`
-    },
-    problem: {
-      heading: `Apakah Kamu Sering Mengalami Ini?`,
-      points: [
-        `Frustrasi dengan masalah ${painPoint} yang tak kunjung selesai.`,
-        `Merasa rugi membeli produk mahal tapi tidak ada hasil yang memuaskan.`,
-        `Bingung mencari solusi yang beneran cocok untuk ${targetCustomer}.`,
-        `Kekhawatiran akan kualitas produk yang tidak terjamin di pasaran.`
-      ]
-    },
-    solution: {
-      heading: `${product} Hadir Sebagai Solusi Terbaik Untukmu`,
-      description: `Dirancang secara profesional untuk menjawab semua keresahanmu tentang ${painPoint} menggunakan formulasi ${usp}.`
-    },
-    benefits: [
-      { title: "Hasil Terbukti", desc: "Membantu mengatasi masalah dengan cepat dan bertahan lama." },
-      { title: "Keunggulan USP", desc: `Diperkaya dengan ${usp} yang aman dan efektif.` },
-      { title: "Harga Terjangkau", desc: `Dapatkan manfaat maksimal hanya dengan ${price}.` }
-    ],
-    features: [
-      { title: "Kualitas Premium", desc: "Dibuat dari bahan standar tinggi dan higienis." },
-      { title: "Mudah Digunakan", desc: "Praktis untuk pemakaian sehari-hari tanpa repot." },
-      { title: "Jaminan Kepuasan", desc: "Dipercaya oleh ribuan pengguna di seluruh Indonesia." }
-    ],
-    cta: {
-      heading: `Jangan Tunda Lagi! Saatnya Beralih ke ${product}`,
-      subheading: `Dapatkan penawaran terbatas khusus hari ini saja.`,
-      buttonText: `DAPATKAN DISKON SEKARANG (${price})`,
-      urgencyText: `⚡ Stok Promo Terbatas! Amankan Pesananmu Sekarang.`
-    }
-  };
-
-  const marketplaceDescription = `🛒 ${product.toUpperCase()} - SOLUSI TERBAIK UNTUK ${targetCustomer.toUpperCase()} 🛒
-
-Apakah Anda mengalami masalah ${painPoint}? 
-${product} adalah pilihan paling tepat untuk Anda!
-
-KEUNGGULAN UTAMA:
-- Formula khusus dengan ${usp}
-- Efektif & aman digunakan
-- Penawaran harga terbaik: ${price}
-
-SPESIFIKASI & CARA PAKAI:
-1. Pakai secara teratur sesuai petunjuk penggunaan.
-2. Rasakan perubahan positif setelah pemakaian konsisten.
-
-Dapatkan garansi kepuasan & pengiriman cepat ke seluruh Indonesia.
-Yuk checkout sekarang sebelum promo berakhir!`;
-
-  const emailMarketing = [
-    {
-      subject: `[Penawaran Khusus] Solusi Bebas ${painPoint} Dalam Satu Langkah ✨`,
-      body: `Halo,\n\nApakah ${painPoint} sering mengganggu aktivitas harianmu?\n\nKami punya kabar baik! ${product} kini hadir membawa inovasi ${usp} yang terbukti membantu ${targetCustomer} mendapatkan hasil maksimal.\n\nSpesial hari ini, kamu bisa mendapatkan ${product} hanya seharga ${price}!\n\nKlik tautan di bawah ini untuk memesan sebelum promo habis.\n\nSalam hangat,\nTim ${product}`
-    }
-  ];
-
-  const whatsAppBroadcast = [
-    `Halo Ka! 👋 Mau tanya dong, masih sering pusing sama masalah ${painPoint}? 🥹\n\nKenalin nih ${product} yang lagi hits! Punya keunggulan ${usp} yang efektif banget.\n\nHari ini lagi ada promo cuma ${price} aja lho Ka! Mau ambil kupon promonya sekarang?`,
-    `Promo Spesial ${product}! 🔥\n\nSolusi tepat buat kamu (${targetCustomer}) yang mau terbebas dari ${painPoint}.\n\nHarga promo khusus hari ini hanya ${price}. Balas 'MAU' sekarang untuk pemesanan ya Kak! ✨`
-  ];
+  const hooks: string[] = Array.from({ length: 20 }, (_, i) => `${tonePrefix}Variasi Hook #${i + 1}: ${product} khusus ${targetCustomer} terbebas dari ${painPoint}!`);
+  const headlines: string[] = Array.from({ length: 20 }, (_, i) => `${product} - Headline #${i + 1}: Solusi Terpercaya dengan ${usp}`);
 
   const result: CopywriterOutput = {
     id: `cp-${Date.now()}`,
@@ -293,18 +169,26 @@ Yuk checkout sekarang sebelum promo berakhir!`;
     input,
     hooks,
     headlines,
-    primaryTextMetaAds,
-    landingPage,
-    marketplaceDescription,
-    emailMarketing,
-    whatsAppBroadcast
+    primaryTextMetaAds: [`Meta Ad Copy #1 untuk ${product}`, `Meta Ad Copy #2 untuk ${product}`],
+    landingPage: {
+      heroSection: { badge: "PROMO LIMITED", h1: `${product} Solusi ${painPoint}`, subheadline: usp, ctaButton: "BELI SEKARANG" },
+      problem: { heading: "Masalah yang Sering Terjadi", points: [painPoint] },
+      solution: { heading: "Solusi Terbaik", description: `${product} hadir untukmu.` },
+      benefits: [{ title: "Cepat & Ampuh", desc: usp }],
+      features: [{ title: "Kualitas Premium", desc: "Teruji aman" }],
+      cta: { heading: "Order Sekarang", subheading: "Harga Promo", buttonText: `Dapatkan ${price}`, urgencyText: "Stok Terbatas" }
+    },
+    marketplaceDescription: `Deskripsi ${product} untuk marketplace...`,
+    emailMarketing: [{ subject: `Diskon Spesial ${product}`, body: `Halo ${targetCustomer}...` }],
+    whatsAppBroadcast: [`Promo ${product} khusus hari ini! ${price}`]
   };
 
   saveCopywriterResult(result);
   return result;
 }
 
-// Initial Creative Designer History
+
+// --- CREATIVE DESIGNER ---
 const INITIAL_CREATIVE_HISTORY: CreativeDesignerOutput[] = [
   {
     id: "cr-sample-1",
@@ -312,7 +196,7 @@ const INITIAL_CREATIVE_HISTORY: CreativeDesignerOutput[] = [
     input: {
       product: "Kopi Kenangan Mantan - Cold Brew Botol",
       brandName: "Kopi Kenangan",
-      style: "Modern Minimalist Modern",
+      style: "Modern Minimalist",
       targetAudience: "Anak Muda, Pekerja Kantor, Gen Z"
     },
     assets: [
@@ -322,62 +206,14 @@ const INITIAL_CREATIVE_HISTORY: CreativeDesignerOutput[] = [
         title: "IG Post Aesthetic Dark Coffee",
         aspectRatio: "1:1",
         dimensions: "1080 x 1080 px",
-        prompt: "Aesthetic premium cold brew coffee bottle on dark obsidian table with glowing neon amber light background, floating coffee beans, commercial photography style, 8k",
+        prompt: "Aesthetic cold brew bottle photography",
         headline: "SEGARKAN HARIMU",
-        subtext: "100% Bijil Kopi Arabika Pilihan",
+        subtext: "100% Biji Kopi Arabika Pilihan",
         ctaText: "ORDER SEKARANG",
         badge: "DISKON 30%",
         bgColor: "#0f172a",
         accentColor: "#f59e0b",
         imageUrl: "https://images.unsplash.com/photo-1517701604599-bb29b565090c?w=800&auto=format&fit=crop&q=80",
-        elements: []
-      },
-      {
-        id: "asset-2",
-        type: "Banner Ads",
-        title: "Meta Ads Landscape Banner",
-        aspectRatio: "16:9",
-        dimensions: "1200 x 628 px",
-        prompt: "Cold brew coffee bottle product banner ad with sleek minimalist typography background, warm wooden aesthetic, soft studio lighting",
-        headline: "BOOST ENERGIMU HARI INI!",
-        subtext: "Sensasi Kopi Robusta & Arabika Blend Pas di Lidah",
-        ctaText: "BELI 2 GRATIS 1",
-        badge: "PROMO KILAT",
-        bgColor: "#1e1b4b",
-        accentColor: "#6366f1",
-        imageUrl: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800&auto=format&fit=crop&q=80",
-        elements: []
-      },
-      {
-        id: "asset-3",
-        type: "Marketplace Cover",
-        title: "Tokopedia / Shopee Cover Product",
-        aspectRatio: "1:1",
-        dimensions: "1080 x 1080 px",
-        prompt: "Clean marketplace cover mockup for cold brew coffee bottle with gradient luxury background, clear badges and benefit points",
-        headline: "KOPI COLD BREW BOTOL 500ML",
-        subtext: "Tahan 14 Hari di Kulkas - Asli Tanpa Pengawet",
-        ctaText: "GRATIS ONGKIR",
-        badge: "BEST SELLER",
-        bgColor: "#064e3b",
-        accentColor: "#10b981",
-        imageUrl: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=800&auto=format&fit=crop&q=80",
-        elements: []
-      },
-      {
-        id: "asset-4",
-        type: "Product Poster",
-        title: "Poster Promosi Cafe / Store",
-        aspectRatio: "9:16",
-        dimensions: "1080 x 1920 px",
-        prompt: "Luxury high-end poster for premium cold brew coffee, dark mood lighting, ice cubes splashing, cinematic lighting",
-        headline: "NIKMATNYA TIADA TARA",
-        subtext: "Diracik Oleh Barista Profesional",
-        ctaText: "KUNJUNGI OUTLET TERDEKAT",
-        badge: "NEW FLAVOR",
-        bgColor: "#450a0a",
-        accentColor: "#ef4444",
-        imageUrl: "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=800&auto=format&fit=crop&q=80",
         elements: []
       }
     ]
@@ -394,7 +230,6 @@ export function getCreativeHistory(): CreativeDesignerOutput[] {
     }
     return JSON.parse(data);
   } catch (e) {
-    console.error("Failed to read creative history:", e);
     return INITIAL_CREATIVE_HISTORY;
   }
 }
@@ -410,57 +245,30 @@ export function saveCreativeResult(item: CreativeDesignerOutput): CreativeDesign
 
 export function generateCreativeAI(input: CreativeDesignerInput): CreativeDesignerOutput {
   const { product, brandName, style, targetAudience } = input;
-
   const sampleImages = [
     "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&auto=format&fit=crop&q=80",
     "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format&fit=crop&q=80",
-    "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&auto=format&fit=crop&q=80",
-    "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=800&auto=format&fit=crop&q=80",
-    "https://images.unsplash.com/photo-1560343090-f0409e92791a?w=800&auto=format&fit=crop&q=80",
-    "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=800&auto=format&fit=crop&q=80"
+    "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&auto=format&fit=crop&q=80"
   ];
 
-  const assetTypes: ('Banner Ads' | 'Instagram Feed' | 'Marketplace Cover' | 'Thumbnail' | 'Product Poster' | 'Logo Concept')[] = [
-    'Instagram Feed',
-    'Banner Ads',
-    'Marketplace Cover',
-    'Product Poster',
-    'Thumbnail',
-    'Logo Concept'
-  ];
+  const types: CreativeAsset['type'][] = ['Instagram Feed', 'Banner Ads', 'Marketplace Cover', 'Product Poster', 'Thumbnail', 'Logo Concept'];
 
-  const assets: CreativeAsset[] = assetTypes.map((type, idx) => {
-    let aspectRatio: '1:1' | '9:16' | '16:9' | '4:5' = '1:1';
-    let dimensions = '1080 x 1080 px';
-
-    if (type === 'Banner Ads') {
-      aspectRatio = '16:9';
-      dimensions = '1200 x 628 px';
-    } else if (type === 'Product Poster') {
-      aspectRatio = '9:16';
-      dimensions = '1080 x 1920 px';
-    } else if (type === 'Thumbnail') {
-      aspectRatio = '16:9';
-      dimensions = '1280 x 720 px';
-    }
-
-    return {
-      id: `asset-${Date.now()}-${idx}`,
-      type,
-      title: `${type} - ${brandName}`,
-      aspectRatio,
-      dimensions,
-      prompt: `Commercial product advertising photography of ${product} by ${brandName}, ${style} style, targeted for ${targetAudience}, high-resolution studio lighting, vibrant colors, 8k render`,
-      headline: `${brandName.toUpperCase()}`,
-      subtext: `Solusi Terbaik ${product} Untukmu`,
-      ctaText: "BELI SEKARANG",
-      badge: idx % 2 === 0 ? "SPECIAL OFFER" : "NEW ARRIVAL",
-      bgColor: idx % 2 === 0 ? "#0f172a" : "#1e1b4b",
-      accentColor: idx % 3 === 0 ? "#6366f1" : idx % 3 === 1 ? "#ec4899" : "#10b981",
-      imageUrl: sampleImages[idx % sampleImages.length],
-      elements: []
-    };
-  });
+  const assets: CreativeAsset[] = types.map((type, idx) => ({
+    id: `asset-${Date.now()}-${idx}`,
+    type,
+    title: `${type} - ${brandName}`,
+    aspectRatio: type === 'Banner Ads' ? '16:9' : type === 'Product Poster' ? '9:16' : '1:1',
+    dimensions: type === 'Banner Ads' ? '1200 x 628 px' : '1080 x 1080 px',
+    prompt: `${style} advertisement for ${product}`,
+    headline: brandName.toUpperCase(),
+    subtext: `Spesial untuk ${targetAudience}`,
+    ctaText: "BELI SEKARANG",
+    badge: "PROMO SPESIAL",
+    bgColor: "#0f172a",
+    accentColor: idx % 2 === 0 ? "#6366f1" : "#ec4899",
+    imageUrl: sampleImages[idx % sampleImages.length],
+    elements: []
+  }));
 
   const result: CreativeDesignerOutput = {
     id: `cr-${Date.now()}`,
@@ -470,5 +278,392 @@ export function generateCreativeAI(input: CreativeDesignerInput): CreativeDesign
   };
 
   saveCreativeResult(result);
+  return result;
+}
+
+
+// --- AI-04 VIDEO CREATOR ---
+const INITIAL_VIDEO_HISTORY: VideoCreatorOutput[] = [
+  {
+    id: "vid-sample-1",
+    createdAt: new Date(Date.now() - 3600000 * 4).toISOString(),
+    input: {
+      productDescription: "Sneakers Running Ultra Light dengan Bantal Empuk Air-Cushion",
+      sellingAngle: "Anti Pegal & Trendi Sepanjang Hari",
+      platform: "TikTok Video",
+      avatarVoice: "Indonesian Female - Maya"
+    },
+    title: "TikTok Video - Ultra Light Sneakers Viral",
+    format: "9:16 Vertical",
+    durationSeconds: 15,
+    script: {
+      hook: "Stoppp jalan kaki pake sepatu keras yang bikin kaki pegal!",
+      body: "Ini dia Sneakers Running Air-Cushion ultra ringan yang bikin langkah serasa melayang di awan.",
+      cta: "Klik keranjang kuning sekarang sebelum diskon 40% berakhir!"
+    },
+    voiceOver: {
+      voiceName: "Maya (Indonesian Female)",
+      audioSpeed: "1.1x Natural Fast",
+      tone: "Energetic & Engaging"
+    },
+    avatarPresenter: {
+      name: "Siti - AI Presenter",
+      role: "Virtual TikTok Host",
+      imageUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80"
+    },
+    scenes: [
+      {
+        sceneNumber: 1,
+        timeRange: "00:00 - 00:03",
+        visualPrompt: "Close up feet walking with uncomfortable shoes versus ultra light air cushion sneakers",
+        scriptText: "Stoppp jalan kaki pake sepatu keras yang bikin kaki pegal!",
+        voiceOverAudioText: "Stoppp jalan kaki pake sepatu keras yang bikin kaki pegal!",
+        subtitleText: "❌ STOP SEPATU KERAS BIKIN PEGAL!",
+        bgImageUrl: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&auto=format&fit=crop&q=80",
+        avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80"
+      },
+      {
+        sceneNumber: 2,
+        timeRange: "00:03 - 00:09",
+        visualPrompt: "Demonstration of sneaker bending in half and air cushion elasticity test",
+        scriptText: "Ini dia Sneakers Running Air-Cushion ultra ringan yang bikin langkah serasa melayang.",
+        voiceOverAudioText: "Ini dia Sneakers Running Air-Cushion ultra ringan yang bikin langkah serasa melayang di awan.",
+        subtitleText: "⚡ AIR-CUSHION SERASA MELAYANG!",
+        bgImageUrl: "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=800&auto=format&fit=crop&q=80",
+        avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80"
+      },
+      {
+        sceneNumber: 3,
+        timeRange: "00:09 - 00:15",
+        visualPrompt: "Presenter pointing down to TikTok yellow basket with discount tag 40% OFF",
+        scriptText: "Klik keranjang kuning sekarang sebelum diskon 40% berakhir!",
+        voiceOverAudioText: "Klik keranjang kuning sekarang sebelum diskon 40% berakhir!",
+        subtitleText: "🛒 KLIK KERANJANG KUNING - DISKON 40%",
+        bgImageUrl: "https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=800&auto=format&fit=crop&q=80",
+        avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80"
+      }
+    ],
+    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-shoes-advertisement-in-a-modern-style-42991-large.mp4"
+  }
+];
+
+export function getVideoHistory(): VideoCreatorOutput[] {
+  if (typeof window === "undefined") return INITIAL_VIDEO_HISTORY;
+  try {
+    const data = localStorage.getItem(DB_KEY_VIDEO);
+    if (!data) {
+      localStorage.setItem(DB_KEY_VIDEO, JSON.stringify(INITIAL_VIDEO_HISTORY));
+      return INITIAL_VIDEO_HISTORY;
+    }
+    return JSON.parse(data);
+  } catch (e) {
+    return INITIAL_VIDEO_HISTORY;
+  }
+}
+
+export function saveVideoResult(item: VideoCreatorOutput): VideoCreatorOutput[] {
+  const current = getVideoHistory();
+  const updated = [item, ...current];
+  if (typeof window !== "undefined") {
+    localStorage.setItem(DB_KEY_VIDEO, JSON.stringify(updated));
+  }
+  return updated;
+}
+
+export function generateVideoAI(input: VideoCreatorInput): VideoCreatorOutput {
+  const { productDescription, sellingAngle, platform, avatarVoice } = input;
+  const avatars = {
+    "Indonesian Female - Maya": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80",
+    "Indonesian Male - Budi": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&auto=format&fit=crop&q=80",
+    "English Female - Sarah": "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&auto=format&fit=crop&q=80",
+    "English Male - James": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&auto=format&fit=crop&q=80"
+  };
+
+  const selectedAvatar = avatars[avatarVoice] || avatars["Indonesian Female - Maya"];
+
+  const scenes: VideoScene[] = [
+    {
+      sceneNumber: 1,
+      timeRange: "00:00 - 00:04",
+      visualPrompt: `High impact hook scene displaying ${productDescription} with angle ${sellingAngle}`,
+      scriptText: `Kalo kamu belum coba ini, kamu rugi banget! Ini dia rahasia ${sellingAngle}!`,
+      voiceOverAudioText: `Kalo kamu belum coba ini, kamu rugi banget! Ini dia rahasia ${sellingAngle}!`,
+      subtitleText: `🔥 RAHASIA UNGULAN: ${sellingAngle.toUpperCase()}`,
+      bgImageUrl: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&auto=format&fit=crop&q=80",
+      avatarUrl: selectedAvatar
+    },
+    {
+      sceneNumber: 2,
+      timeRange: "00:04 - 00:10",
+      visualPrompt: `Product showcase scene showing features of ${productDescription}`,
+      scriptText: `Diperkaya dengan formulasi hebat yang bikin hasil 10x lebih cepat dan maksimal!`,
+      voiceOverAudioText: `Diperkaya dengan formulasi hebat yang bikin hasil 10x lebih cepat dan maksimal!`,
+      subtitleText: `⚡ FORMULA 10X LEBIH CEPAT & EFEKTIF`,
+      bgImageUrl: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&auto=format&fit=crop&q=80",
+      avatarUrl: selectedAvatar
+    },
+    {
+      sceneNumber: 3,
+      timeRange: "00:10 - 00:15",
+      visualPrompt: `Call to action scene with discount badge & urgency countdown`,
+      scriptText: `Mumpung lagi promo terbatas, checkout sekarang di tombol bawah ya!`,
+      voiceOverAudioText: `Mumpung lagi promo terbatas, checkout sekarang di tombol bawah ya!`,
+      subtitleText: `🛒 PROMO TERBATAS - CHECKOUT SEKARANG!`,
+      bgImageUrl: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&auto=format&fit=crop&q=80",
+      avatarUrl: selectedAvatar
+    }
+  ];
+
+  const result: VideoCreatorOutput = {
+    id: `vid-${Date.now()}`,
+    createdAt: new Date().toISOString(),
+    input,
+    title: `${platform} - 9:16 Vertical Video`,
+    format: "9:16 Vertical",
+    durationSeconds: 15,
+    script: {
+      hook: scenes[0].scriptText,
+      body: scenes[1].scriptText,
+      cta: scenes[2].scriptText
+    },
+    voiceOver: {
+      voiceName: avatarVoice,
+      audioSpeed: "1.0x Standard",
+      tone: "Friendly & Persuasive"
+    },
+    avatarPresenter: {
+      name: avatarVoice.split(" - ")[1] || "Presenter AI",
+      role: "Virtual Brand Presenter",
+      imageUrl: selectedAvatar
+    },
+    scenes,
+    videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-shoes-advertisement-in-a-modern-style-42991-large.mp4"
+  };
+
+  saveVideoResult(result);
+  return result;
+}
+
+
+// --- AI-05 ADS MANAGER ---
+const INITIAL_ADS_HISTORY: AdsManagerOutput[] = [
+  {
+    id: "ads-sample-1",
+    createdAt: new Date(Date.now() - 3600000 * 6).toISOString(),
+    input: {
+      product: "GlowSkin Vitamin C Serum",
+      budget: "Rp 10.000.000 / Bulan",
+      targetCustomer: "Wanita Karir 22-35 Tahun, Tertarik Skincare & Kecantikan"
+    },
+    recommendation: {
+      campaignObjective: "Conversions / Sales",
+      audience: {
+        ageRange: "22 - 35 Tahun",
+        gender: "Female",
+        interests: ["Skincare Routine", "Korean Beauty", "Sephora", "Cosmetics"],
+        behaviors: ["Engaged Shoppers", "Frequent Online Purchasers"]
+      },
+      budgetRecommendation: {
+        dailyBudget: "Rp 330.000 / Hari",
+        monthlyBudget: "Rp 10.000.000 / Bulan",
+        biddingStrategy: "Highest Volume / Lowest Cost"
+      },
+      creativeRecommendation: {
+        hookType: "Problem-Agitation-Solution Video 15s",
+        adFormat: "9:16 TikTok Reels Video + Carousel Visual",
+        primaryTextAngle: "Garansi Glowing 7 Hari Tanpa Klinik"
+      },
+      scalingStrategy: [
+        "Jikapun ROAS > 3.0 selama 3 hari berturut-turut, naikkan budget 20% per 48 jam.",
+        "Duplikasi Ad Set winning ke CBO Campaign dengan budget 2x lipat."
+      ],
+      killAdsRecommendation: [
+        "Matikan iklan jika CTR < 1.2% setelah 1.000 impresi.",
+        "Stop ad creative jika CPA > Rp 65.000 tanpa adanya transaksi."
+      ],
+      roasOptimization: {
+        targetRoas: "3.5x - 4.2x ROAS",
+        actionPlan: "Fokus retargeting audience yang add-to-cart dalam 7 hari terakhir dengan penawaran Free Ongkir."
+      }
+    },
+    campaigns: [
+      {
+        id: "c-1",
+        name: "BOF_Sales_GlowSkin_Women_Broad",
+        status: "Active",
+        budgetDaily: "Rp 150.000",
+        spent: "Rp 2.450.000",
+        conversions: 42,
+        cpa: "Rp 58.333",
+        roas: 3.8,
+        ctr: "2.4%",
+        aiInsight: "Kinerja sangat stabil! ROAS 3.8x melebihi target. Siap dipindahkan ke tahap Scale Up (+20% budget)."
+      },
+      {
+        id: "c-2",
+        name: "MOF_Retargeting_ATC_7Days",
+        status: "Scale",
+        budgetDaily: "Rp 200.000",
+        spent: "Rp 4.100.000",
+        conversions: 89,
+        cpa: "Rp 46.067",
+        roas: 4.6,
+        ctr: "3.8%",
+        aiInsight: "Winning Campaign! Konversi sangat tinggi dari audience retargeting cart abandoners."
+      },
+      {
+        id: "c-3",
+        name: "Testing_Creative_Video_Hook2",
+        status: "Learning",
+        budgetDaily: "Rp 100.000",
+        spent: "Rp 450.000",
+        conversions: 5,
+        cpa: "Rp 90.000",
+        roas: 2.1,
+        ctr: "1.6%",
+        aiInsight: "Masih dalam fase Meta Learning. Biarkan berjalan hingga 50 konversi tercapai."
+      },
+      {
+        id: "c-4",
+        name: "TOF_Interest_Men_Skincare_Old",
+        status: "Stop",
+        budgetDaily: "Rp 50.000",
+        spent: "Rp 850.000",
+        conversions: 4,
+        cpa: "Rp 212.500",
+        roas: 0.9,
+        ctr: "0.7%",
+        aiInsight: "🚨 AI Warning: Campaign ini turun 30% dalam CTR & CPA terlalu mahal. Matikan iklan (Kill Ads) untuk menghemat budget."
+      }
+    ],
+    overallStats: {
+      totalSpent: "Rp 7.850.000",
+      totalConversions: 140,
+      avgRoas: 3.85,
+      blendedCpa: "Rp 56.071"
+    }
+  }
+];
+
+export function getAdsHistory(): AdsManagerOutput[] {
+  if (typeof window === "undefined") return INITIAL_ADS_HISTORY;
+  try {
+    const data = localStorage.getItem(DB_KEY_ADS);
+    if (!data) {
+      localStorage.setItem(DB_KEY_ADS, JSON.stringify(INITIAL_ADS_HISTORY));
+      return INITIAL_ADS_HISTORY;
+    }
+    return JSON.parse(data);
+  } catch (e) {
+    return INITIAL_ADS_HISTORY;
+  }
+}
+
+export function saveAdsResult(item: AdsManagerOutput): AdsManagerOutput[] {
+  const current = getAdsHistory();
+  const updated = [item, ...current];
+  if (typeof window !== "undefined") {
+    localStorage.setItem(DB_KEY_ADS, JSON.stringify(updated));
+  }
+  return updated;
+}
+
+export function generateAdsAI(input: AdsManagerInput): AdsManagerOutput {
+  const { product, budget, targetCustomer } = input;
+
+  const result: AdsManagerOutput = {
+    id: `ads-${Date.now()}`,
+    createdAt: new Date().toISOString(),
+    input,
+    recommendation: {
+      campaignObjective: "Conversions / Sales",
+      audience: {
+        ageRange: "20 - 40 Tahun",
+        gender: "All",
+        interests: [targetCustomer, "Online Shopping", "Impulse Buyers"],
+        behaviors: ["Engaged Shoppers", "Mobile Device Users"]
+      },
+      budgetRecommendation: {
+        dailyBudget: `Alokasi Harian dari total ${budget}`,
+        monthlyBudget: budget,
+        biddingStrategy: "Lowest Cost with Bid Cap"
+      },
+      creativeRecommendation: {
+        hookType: "High Impact Visual 9:16 Video",
+        adFormat: "Video Vertical TikTok/Reels + Meta Carousel",
+        primaryTextAngle: `Solusi Ampuh ${product}`
+      },
+      scalingStrategy: [
+        "Naikkan budget 20% setiap 48 jam jika ROAS > 3.0x",
+        "Buat Lookalike Audience (LAL 1%) dari pembeli 30 hari terakhir"
+      ],
+      killAdsRecommendation: [
+        "Matikan Ad Set jika CPR/CPA > 2x lipat dari target",
+        "Stop ad creative jika CTR < 1.0% setelah 2.000 impresi"
+      ],
+      roasOptimization: {
+        targetRoas: "3.5x - 4.5x ROAS",
+        actionPlan: "Optimasilanding page speed dan tambahkan timer urgency checkout."
+      }
+    },
+    campaigns: [
+      {
+        id: `c-${Date.now()}-1`,
+        name: `Sales_Broad_${product.replace(/\s+/g, '_')}`,
+        status: "Active",
+        budgetDaily: "Rp 250.000",
+        spent: "Rp 1.250.000",
+        conversions: 28,
+        cpa: "Rp 44.642",
+        roas: 4.1,
+        ctr: "2.8%",
+        aiInsight: "Performa sangat bagus! ROAS 4.1x. Pertahankan dan pertimbangkan untuk scale up."
+      },
+      {
+        id: `c-${Date.now()}-2`,
+        name: `Retargeting_Visitors_${product.replace(/\s+/g, '_')}`,
+        status: "Scale",
+        budgetDaily: "Rp 350.000",
+        spent: "Rp 2.800.000",
+        conversions: 64,
+        cpa: "Rp 43.750",
+        roas: 4.8,
+        ctr: "3.9%",
+        aiInsight: "Campaign Utama Paling Profit! Teruskan alokasi budget terbesar di sini."
+      },
+      {
+        id: `c-${Date.now()}-3`,
+        name: `Test_Creative_Angle2`,
+        status: "Learning",
+        budgetDaily: "Rp 100.000",
+        spent: "Rp 300.000",
+        conversions: 4,
+        cpa: "Rp 75.000",
+        roas: 2.2,
+        ctr: "1.4%",
+        aiInsight: "Dalam pembelajaran AI. Perlu dipantau hingga 24 jam kedepan."
+      },
+      {
+        id: `c-${Date.now()}-4`,
+        name: `Old_Campaign_Unoptimized`,
+        status: "Stop",
+        budgetDaily: "Rp 50.000",
+        spent: "Rp 600.000",
+        conversions: 2,
+        cpa: "Rp 300.000",
+        roas: 0.7,
+        ctr: "0.6%",
+        aiInsight: "🚨 AI Warning: Campaign ini turun 30% dalam conversion rate. Segera Kill Ads untuk efisiensi!"
+      }
+    ],
+    overallStats: {
+      totalSpent: "Rp 4.950.000",
+      totalConversions: 98,
+      avgRoas: 4.02,
+      blendedCpa: "Rp 50.510"
+    }
+  };
+
+  saveAdsResult(result);
   return result;
 }

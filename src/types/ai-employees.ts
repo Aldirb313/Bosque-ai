@@ -90,3 +90,109 @@ export interface CreativeDesignerOutput {
   input: CreativeDesignerInput;
   assets: CreativeAsset[];
 }
+
+// AI-04 VIDEO CREATOR TYPES
+export interface VideoCreatorInput {
+  productDescription: string;
+  sellingAngle: string;
+  productImage?: string;
+  platform: 'TikTok Video' | 'Instagram Reel' | 'YouTube Shorts';
+  avatarVoice: 'Indonesian Female - Maya' | 'Indonesian Male - Budi' | 'English Female - Sarah' | 'English Male - James';
+}
+
+export interface VideoScene {
+  sceneNumber: number;
+  timeRange: string; // e.g. "00:00 - 00:04"
+  visualPrompt: string;
+  scriptText: string;
+  voiceOverAudioText: string;
+  subtitleText: string;
+  bgImageUrl: string;
+  avatarUrl: string;
+}
+
+export interface VideoCreatorOutput {
+  id: string;
+  createdAt: string;
+  input: VideoCreatorInput;
+  title: string;
+  format: '9:16 Vertical';
+  durationSeconds: number;
+  script: {
+    hook: string;
+    body: string;
+    cta: string;
+  };
+  voiceOver: {
+    voiceName: string;
+    audioSpeed: string;
+    tone: string;
+  };
+  avatarPresenter: {
+    name: string;
+    role: string;
+    imageUrl: string;
+  };
+  scenes: VideoScene[];
+  videoUrl: string; // Simulated render output MP4
+}
+
+// AI-05 ADS MANAGER TYPES
+export interface AdsManagerInput {
+  product: string;
+  budget: string; // e.g. "Rp 5.000.000 / Bulan"
+  targetCustomer: string;
+}
+
+export interface CampaignRecommendation {
+  campaignObjective: 'Conversions / Sales' | 'Lead Generation' | 'Traffic' | 'Brand Awareness';
+  audience: {
+    ageRange: string;
+    gender: 'All' | 'Female' | 'Male';
+    interests: string[];
+    behaviors: string[];
+  };
+  budgetRecommendation: {
+    dailyBudget: string;
+    monthlyBudget: string;
+    biddingStrategy: string;
+  };
+  creativeRecommendation: {
+    hookType: string;
+    adFormat: string;
+    primaryTextAngle: string;
+  };
+  scalingStrategy: string[];
+  killAdsRecommendation: string[];
+  roasOptimization: {
+    targetRoas: string;
+    actionPlan: string;
+  };
+}
+
+export interface CampaignDashboardItem {
+  id: string;
+  name: string;
+  status: 'Active' | 'Learning' | 'Scale' | 'Stop';
+  budgetDaily: string;
+  spent: string;
+  conversions: number;
+  cpa: string;
+  roas: number;
+  ctr: string;
+  aiInsight: string;
+}
+
+export interface AdsManagerOutput {
+  id: string;
+  createdAt: string;
+  input: AdsManagerInput;
+  recommendation: CampaignRecommendation;
+  campaigns: CampaignDashboardItem[];
+  overallStats: {
+    totalSpent: string;
+    totalConversions: number;
+    avgRoas: number;
+    blendedCpa: string;
+  };
+}
