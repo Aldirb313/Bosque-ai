@@ -1,4 +1,6 @@
 import { 
+  ProductResearchInput,
+  ProductResearchOutput,
   CopywriterInput, 
   CopywriterOutput, 
   CreativeDesignerInput, 
@@ -10,13 +12,464 @@ import {
   AdsManagerInput,
   AdsManagerOutput,
   CampaignRecommendation,
-  CampaignDashboardItem
+  CampaignDashboardItem,
+  UserSubscription,
+  CreditTransaction,
+  AnalyticsMetrics,
+  PlanTier
 } from "@/types/ai-employees";
 
+const DB_KEY_RESEARCH = "bosque_ai_research_history_v1";
 const DB_KEY_COPYWRITER = "bosque_ai_copywriter_history_v1";
 const DB_KEY_CREATIVE = "bosque_ai_creative_history_v1";
 const DB_KEY_VIDEO = "bosque_ai_video_history_v1";
 const DB_KEY_ADS = "bosque_ai_ads_history_v1";
+const DB_KEY_SUBSCRIPTION = "bosque_ai_user_subscription_v1";
+const DB_KEY_CREDIT_TX = "bosque_ai_credit_tx_v1";
+
+// --- SUBSCRIPTION & CREDIT SYSTEM ENGINE ---
+const INITIAL_SUBSCRIPTION: UserSubscription = {
+  plan: 'FREE',
+  creditsRemaining: 10,
+  monthlyLimit: 10,
+  renewsAt: new Date(Date.now() + 86400000 * 30).toISOString(),
+  status: 'active',
+  paymentGateway: 'Midtrans'
+};
+
+const INITIAL_TRANSACTIONS: CreditTransaction[] = [
+  {
+    id: "tx-init-1",
+    timestamp: new Date().toISOString(),
+    action: "Monthly Bonus Free Plan",
+    amount: 10,
+    balanceAfter: 10,
+    employeeType: "AI-01 Research"
+  }
+];
+
+export function getUserSubscription(): UserSubscription {
+  if (typeof window === "undefined") return INITIAL_SUBSCRIPTION;
+  try {
+    const data = localStorage.getItem(DB_KEY_SUBSCRIPTION);
+    if (!data) {
+      localStorage.setItem(DB_KEY_SUBSCRIPTION, JSON.stringify(INITIAL_SUBSCRIPTION));
+      return INITIAL_SUBSCRIPTION;
+    }
+    return JSON.parse(data);
+  } catch {
+    return INITIAL_SUBSCRIPTION;
+  }
+}
+
+export function updateUserSubscription(plan: PlanTier, gateway: 'Stripe' | 'Midtrans'): UserSubscription {
+  const current = getUserSubscription();
+  const limits: Record<PlanTier, number> = {
+    FREE: 10,
+    PRO: 500,
+    BUSINESS: 2500
+  };
+
+  const updated: UserSubscription = {
+    ...current,
+    plan,
+    monthlyLimit: limits[plan],
+    creditsRemaining: limits[plan],
+    paymentGateway: gateway,
+    status: 'active'
+  };
+
+  if (typeof window !== "undefined") {
+    localStorage.setItem(DB_KEY_SUBSCRIPTION, JSON.stringify(updated));
+    recordCreditTransaction(
+      `Upgraded Plan to ${plan} via ${gateway}`,
+      limits[plan],
+      updated.creditsRemaining,
+      "AI-01 Research"
+    );
+  }
+  return updated;
+}
+
+export function deductUserCredit(action: string, employeeType: any, cost: number = 1): boolean {
+  const current = getUserSubscription();
+  
+  if (current.plan !== 'FREE' && current.plan !== 'PRO' && current.plan !== 'BUSINESS') {
+    return false;
+  }
+
+  if (current.creditsRemaining < cost) {
+    return false;
+  }
+
+  const newBalance = current.creditsRemaining - cost;
+  const updated: UserSubscription = {
+    ...current,
+    creditsRemaining: newBalance
+  };
+
+  if (typeof window !== "undefined") {
+    localStorage.setItem(DB_KEY_SUBSCRIPTION, JSON.stringify(updated));
+    recordCreditTransaction(action, -cost, newBalance, employeeType);
+  }
+  return true;
+}
+
+export function getCreditTransactions(): CreditTransaction[] {
+  if (typeof window === "undefined") return INITIAL_TRANSACTIONS;
+  try {
+    const data = localStorage.getItem(DB_KEY_CREDIT_TX);
+    if (!data) {
+      localStorage.setItem(DB_KEY_CREDIT_TX, JSON.stringify(INITIAL_TRANSACTIONS));
+      return INITIAL_TRANSACTIONS;
+    }
+    return JSON.parse(data);
+  } catch {
+    return INITIAL_TRANSACTIONS;
+  }
+}
+
+function recordCreditTransaction(action: string, amount: number, balanceAfter: number, employeeType: any) {
+  if (typeof window === "undefined") return;
+  const txs = getCreditTransactions();
+  const newTx: CreditTransaction = {
+    id: `tx-${Date.now()}`,
+    timestamp: new Date().toISOString(),
+    action,
+    amount,
+    balanceAfter,
+    employeeType
+  };
+  localStorage.setItem(DB_KEY_CREDIT_TX, JSON.stringify([newTx, ...txs]));
+}
+
+export function getSaaSAnalytics(): AnalyticsMetrics {
+  return {
+    totalUsers: 14820,
+    activeUsers: 8940,
+    mrr: 184500000, // Rp 184.5M MRR
+    churnRate: 1.8,
+    retentionRate: 94.2,
+    totalAiCreditsUsed: 428900,
+    dailyUsageTrend: [
+      { date: "Sen", usage: 12400 },
+      { date: "Sel", usage: 15800 },
+      { date: "Rab", usage: 14200 },
+      { date: "Kam", usage: 18900 },
+      { date: "Jum", usage: 22400 },
+      { date: "Sab", usage: 19800 },
+      { date: "Min", usage: 16500 }
+    ],
+    revenueTrend: [
+      { month: "Mar", amount: 110000000 },
+      { month: "Apr", amount: 135000000 },
+      { month: "Mei", amount: 152000000 },
+      { month: "Jun", amount: 168000000 },
+      { month: "Jul", amount: 175000000 },
+      { month: "Agu", amount: 184500000 }
+    ]
+  };
+}
+
+// --- AI-01 PRODUCT RESEARCH ---
+const INITIAL_RESEARCH_HISTORY: ProductResearchOutput[] = [
+  {
+    id: "res-sample-1",
+    createdAt: new Date(Date.now() - 3600000 * 3).toISOString(),
+    input: {
+      keyword: "Portable Blender",
+      category: "Dapur & Elektronik Rumahan",
+      targetMarket: "Mahasiswa, Pejuang Diet & Pekerja Kantor",
+      country: "Indonesia",
+      targetPrice: "Rp 189.000"
+    },
+    productName: "Portable Blender Juicer Wireless 6-Blades",
+    overallScore: 87,
+    details: {
+      demandScore: 90,
+      competitionScore: 65,
+      profitMarginScore: 75,
+      viralPotentialScore: 95,
+      marketOpportunityScore: 88
+    },
+    marketplaces: [
+      {
+        platform: "Shopee",
+        volumeText: "145.000+ pencarian/bln",
+        searchVolume: 92,
+        avgPrice: "Rp 165.000 - Rp 210.000",
+        competitionLevel: "High",
+        topStoresCount: 48
+      },
+      {
+        platform: "Tokopedia",
+        volumeText: "82.000+ pencarian/bln",
+        searchVolume: 78,
+        avgPrice: "Rp 175.000 - Rp 230.000",
+        competitionLevel: "Medium",
+        topStoresCount: 32
+      },
+      {
+        platform: "TikTok Shop",
+        volumeText: "210.000+ penjualan/bln",
+        searchVolume: 98,
+        avgPrice: "Rp 159.000 - Rp 199.000",
+        competitionLevel: "High",
+        topStoresCount: 65
+      },
+      {
+        platform: "Meta Ads Library & Shop",
+        volumeText: "320+ Active Ads & IG Shopping Catalogs",
+        searchVolume: 94,
+        avgPrice: "Rp 169.000 - Rp 225.000",
+        competitionLevel: "High",
+        topStoresCount: 54
+      },
+      {
+        platform: "Amazon",
+        volumeText: "$2.4M GMV Global/bln",
+        searchVolume: 85,
+        avgPrice: "$24.99 - $34.99",
+        competitionLevel: "Very High",
+        topStoresCount: 120
+      }
+    ],
+    trendAnalysis: [
+      {
+        source: "Google Trends",
+        score: 88,
+        statusText: "Breakout Trend (+180% 30 hari)",
+        growthRate: "+180% YoY"
+      },
+      {
+        source: "TikTok Trend",
+        score: 96,
+        statusText: "Extremely Viral (#PortableBlender 45M views)",
+        growthRate: "+320% MoM"
+      },
+      {
+        source: "Meta Signals (FB & IG)",
+        score: 94,
+        statusText: "High Engagement Meta Feed & Reels Ads",
+        growthRate: "+210% MoM"
+      },
+      {
+        source: "Social Media Signal",
+        score: 92,
+        statusText: "Tinggi konten UGC & Unboxing Video",
+        growthRate: "+140% WoW"
+      }
+    ],
+    aiRecommendation: "Produk ini SANGAT LAYAK LAUNCH! Memiliki tingkat kelayakan yang sangat tinggi karena dorongan konten visual TikTok & gaya hidup sehat yang terus berkembang. Fokuslah pada angle keunggulan 'Bisa Charge USB, Mudah Dicuci, & Pisau 6-Blades Anti Macet' untuk menaklukkan pasar pesaing.",
+    estimatedProfitRange: "Rp 65.000 - Rp 95.000 / unit (Margin 45-60%)",
+    winningAngles: [
+      "Bikin smoothie protein kilat di meja kantor tanpa colokan listrik",
+      "Solusi MPASI praktis ibu muda saat jalan-jalan & traveling",
+      "Estetik & Instagramable untuk konten harian minum jus sehat"
+    ],
+    winningProducts: [
+      {
+        id: "win-1",
+        name: "Wireless Portable Blender 6-Blades 500ml",
+        category: "Kitchen Electronics",
+        trendStatus: "🔥 VIRAL DI TIKTOK SHOP",
+        estSupplierPrice: "Rp 65.000",
+        estSellingPrice: "Rp 189.000",
+        potentialProfitMargin: "65% (Rp 124.000/unit)",
+        viralScore: 96,
+        reasonWhyWinning: "Tinggi permintaan dari pencinta gym & pekerja kantoran, efisien tanpa colokan kabel."
+      },
+      {
+        id: "win-2",
+        name: "Electric Protein Shaker Bottle USB-C",
+        category: "Fitness & Lifestyle",
+        trendStatus: "📈 BREAKOUT GOOGLE TRENDS",
+        estSupplierPrice: "Rp 45.000",
+        estSellingPrice: "Rp 149.000",
+        potentialProfitMargin: "70% (Rp 104.000/unit)",
+        viralScore: 92,
+        reasonWhyWinning: "Menggantikan botol shaker manual, anti menggumpal untuk susu protein/collagen."
+      },
+      {
+        id: "win-3",
+        name: "Mini Cold Press Slow Juicer Portable",
+        category: "Healthy Living",
+        trendStatus: "⭐ HIGH DEMAND SHOPEE & TOKOPEDIA",
+        estSupplierPrice: "Rp 120.000",
+        estSellingPrice: "Rp 299.000",
+        potentialProfitMargin: "60% (Rp 179.000/unit)",
+        viralScore: 89,
+        reasonWhyWinning: "Trend jus seledri & diet detox organik tanpa ampas, margin keuntungan besar."
+      }
+    ]
+  }
+];
+
+export function getResearchHistory(): ProductResearchOutput[] {
+  if (typeof window === "undefined") return INITIAL_RESEARCH_HISTORY;
+  try {
+    const data = localStorage.getItem(DB_KEY_RESEARCH);
+    if (!data) {
+      localStorage.setItem(DB_KEY_RESEARCH, JSON.stringify(INITIAL_RESEARCH_HISTORY));
+      return INITIAL_RESEARCH_HISTORY;
+    }
+    return JSON.parse(data);
+  } catch {
+    return INITIAL_RESEARCH_HISTORY;
+  }
+}
+
+export function saveResearchResult(result: ProductResearchOutput): void {
+  if (typeof window === "undefined") return;
+  try {
+    const history = getResearchHistory();
+    const updated = [result, ...history.filter(item => item.id !== result.id)];
+    localStorage.setItem(DB_KEY_RESEARCH, JSON.stringify(updated));
+  } catch (e) {
+    console.error("Error saving research result:", e);
+  }
+}
+
+export function generateProductResearchAI(input: ProductResearchInput): ProductResearchOutput {
+  const kw = input.keyword || "Produk Pilihan";
+  
+  // Calculate dynamic logical scores based on string length & randomness
+  const seed = kw.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  const baseScore = 70 + (seed % 25); // 70 - 95
+  const demand = Math.min(99, 75 + ((seed * 3) % 23));
+  const competition = Math.min(95, 50 + ((seed * 7) % 40));
+  const margin = Math.min(98, 60 + ((seed * 5) % 35));
+  const viral = Math.min(99, 70 + ((seed * 11) % 28));
+  const opportunity = Math.round((demand + margin + viral - (competition * 0.4)) / 2.6);
+
+  const result: ProductResearchOutput = {
+    id: `res-${Date.now()}`,
+    createdAt: new Date().toISOString(),
+    input,
+    productName: `${kw.toUpperCase()} - Winning Edition`,
+    overallScore: baseScore,
+    details: {
+      demandScore: demand,
+      competitionScore: competition,
+      profitMarginScore: margin,
+      viralPotentialScore: viral,
+      marketOpportunityScore: Math.min(98, Math.max(65, opportunity))
+    },
+    marketplaces: [
+      {
+        platform: "Shopee",
+        volumeText: `${(demand * 1400).toLocaleString('id-ID')} pencarian/bln`,
+        searchVolume: Math.min(98, demand + 2),
+        avgPrice: input.targetPrice ? input.targetPrice : "Rp 120.000 - Rp 250.000",
+        competitionLevel: competition > 75 ? "High" : competition > 55 ? "Medium" : "Low",
+        topStoresCount: Math.floor(competition * 0.7) + 12
+      },
+      {
+        platform: "Tokopedia",
+        volumeText: `${(demand * 900).toLocaleString('id-ID')} pencarian/bln`,
+        searchVolume: Math.min(95, demand - 8),
+        avgPrice: input.targetPrice ? input.targetPrice : "Rp 130.000 - Rp 270.000",
+        competitionLevel: competition > 80 ? "Very High" : competition > 60 ? "Medium" : "Low",
+        topStoresCount: Math.floor(competition * 0.5) + 10
+      },
+      {
+        platform: "TikTok Shop",
+        volumeText: `${(viral * 2200).toLocaleString('id-ID')} views & sales/bln`,
+        searchVolume: Math.min(99, viral + 3),
+        avgPrice: input.targetPrice ? input.targetPrice : "Rp 99.000 - Rp 199.000",
+        competitionLevel: viral > 85 ? "High" : "Medium",
+        topStoresCount: Math.floor(viral * 0.8) + 15
+      },
+      {
+        platform: "Meta Ads Library & Shop",
+        volumeText: `${Math.floor(demand * 4.2)} Active Ads & IG Shopping Catalogs`,
+        searchVolume: Math.min(97, demand + 1),
+        avgPrice: input.targetPrice ? input.targetPrice : "Rp 129.000 - Rp 249.000",
+        competitionLevel: demand > 75 ? "High" : "Medium",
+        topStoresCount: Math.floor(demand * 0.6) + 14
+      },
+      {
+        platform: "Amazon",
+        volumeText: `$${(demand * 25).toLocaleString('en-US')}k GMV Global/bln`,
+        searchVolume: Math.min(95, demand - 5),
+        avgPrice: "$19.99 - $49.99",
+        competitionLevel: "High",
+        topStoresCount: 85
+      }
+    ],
+    trendAnalysis: [
+      {
+        source: "Google Trends",
+        score: demand,
+        statusText: demand > 80 ? "Sangat Tinggi & Trending Naik" : "Stabil & Konsisten",
+        growthRate: `+${demand * 2.1}% YoY`
+      },
+      {
+        source: "TikTok Trend",
+        score: viral,
+        statusText: viral > 85 ? "Viral Signal Active 🔥" : "Moderate UGC Virality",
+        growthRate: `+${viral * 3.4}% MoM`
+      },
+      {
+        source: "Meta Signals (FB & IG)",
+        score: Math.min(99, Math.round((demand * 0.6) + (viral * 0.4))),
+        statusText: "Skala Iklan Meta Active & High CTR Feed",
+        growthRate: `+${Math.round(viral * 2.8)}% MoM`
+      },
+      {
+        source: "Social Media Signal",
+        score: Math.min(99, Math.round((demand + viral) / 2)),
+        statusText: "Respon Positif dari Audiens Target",
+        growthRate: `+${Math.round(demand * 1.6)}% WoW`
+      }
+    ],
+    aiRecommendation: `Produk "${kw}" memiliki skor potensi sebesar ${baseScore}/100. Produk ini sangat direkomendasikan untuk launching di pasar ${input.country || 'Indonesia'} karena memiliki Demand Score sebesar ${demand}% dan Viral Potential sebesar ${viral}%. Disarankan untuk mengutamakan pemasaran di platform TikTok Shop & Shopee dengan menekankan solusi masalah untuk audiens ${input.targetMarket || 'Utama'}.`,
+    estimatedProfitRange: `Margin Keuntungan Est. ${margin}% (Potensi Net Profit 40-55%)`,
+    winningAngles: [
+      `Fokuskan kampanye pada mengatasi masalah utama audiens ${input.targetMarket || 'pengguna'}`,
+      `Gunakan racun produk via video demo berdurasi 15 detik di TikTok`,
+      `Bundling dengan aksesoris pendukung untuk menaikkan AOV (Average Order Value)`
+    ],
+    winningProducts: [
+      {
+        id: `win-${Date.now()}-1`,
+        name: `${kw} Premium Edition - Ultra Slim`,
+        category: input.category || "General E-Commerce",
+        trendStatus: "🔥 TOP VIRAL ITEM IN TIKTOK SHOP",
+        estSupplierPrice: input.targetPrice ? `Rp ${Math.round(parseInt(input.targetPrice.replace(/\D/g, '') || "100000") * 0.35).toLocaleString('id-ID')}` : "Rp 55.000",
+        estSellingPrice: input.targetPrice ? input.targetPrice : "Rp 175.000",
+        potentialProfitMargin: `65% (Margin Rp ${Math.round(parseInt(input.targetPrice?.replace(/\D/g, '') || "175000") * 0.65).toLocaleString('id-ID')}/unit)`,
+        viralScore: Math.min(99, viral + 2),
+        reasonWhyWinning: `Berdasarkan analisis algoritma TikTok & Shopee, ${kw} memiliki konversi tinggi jika dikemas dengan garansi ganti baru.`
+      },
+      {
+        id: `win-${Date.now()}-2`,
+        name: `Smart ${kw} Pro Sync`,
+        category: input.category || "General E-Commerce",
+        trendStatus: "📈 BREAKOUT TREND ON GOOGLE",
+        estSupplierPrice: input.targetPrice ? `Rp ${Math.round(parseInt(input.targetPrice.replace(/\D/g, '') || "100000") * 0.4).toLocaleString('id-ID')}` : "Rp 70.000",
+        estSellingPrice: input.targetPrice ? input.targetPrice : "Rp 199.000",
+        potentialProfitMargin: `60% (Margin Rp ${Math.round(parseInt(input.targetPrice?.replace(/\D/g, '') || "199000") * 0.60).toLocaleString('id-ID')}/unit)`,
+        viralScore: Math.min(98, demand + 1),
+        reasonWhyWinning: `Pencarian kata kunci organik naik +${demand * 2}% bulan ini. Pesaing di Tokopedia masih minim toko official.`
+      },
+      {
+        id: `win-${Date.now()}-3`,
+        name: `Compact ${kw} Travel Pack`,
+        category: input.category || "General E-Commerce",
+        trendStatus: "⭐ RISING STAR MARKETPLACE",
+        estSupplierPrice: input.targetPrice ? `Rp ${Math.round(parseInt(input.targetPrice.replace(/\D/g, '') || "100000") * 0.3).toLocaleString('id-ID')}` : "Rp 40.000",
+        estSellingPrice: input.targetPrice ? input.targetPrice : "Rp 139.000",
+        potentialProfitMargin: `70% (Margin Rp ${Math.round(parseInt(input.targetPrice?.replace(/\D/g, '') || "139000") * 0.70).toLocaleString('id-ID')}/unit)`,
+        viralScore: Math.min(96, viral - 3),
+        reasonWhyWinning: `Produk ringan dengan ongkir murah, sangat diminati oleh audiens ${input.targetMarket || 'muda'}.`
+      }
+    ]
+  };
+
+  saveResearchResult(result);
+  return result;
+}
 
 // --- COPYWRITER ---
 const INITIAL_COPYWRITER_HISTORY: CopywriterOutput[] = [

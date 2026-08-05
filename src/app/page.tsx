@@ -1,11 +1,14 @@
 "use client";
 
 import React, { useState } from "react";
+import ProductResearchView from "@/components/ProductResearchView";
 import CopywriterView from "@/components/CopywriterView";
 import CreativeDesignerView from "@/components/CreativeDesignerView";
 import VideoCreatorView from "@/components/VideoCreatorView";
 import AdsManagerView from "@/components/AdsManagerView";
+import SaaSAdminBillingAnalyticsView from "@/components/SaaSAdminBillingAnalyticsView";
 import { 
+  Search,
   Bot, 
   Zap, 
   Palette, 
@@ -13,11 +16,11 @@ import {
   BarChart3, 
   Sparkles, 
   ShieldCheck, 
-  Layers
+  CreditCard
 } from "lucide-react";
 
 export default function SaaSMainDashboard() {
-  const [activeTab, setActiveTab] = useState<'copywriter' | 'designer' | 'video' | 'ads'>('copywriter');
+  const [activeTab, setActiveTab] = useState<'research' | 'copywriter' | 'designer' | 'video' | 'ads' | 'billing'>('research');
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-indigo-500 selection:text-white">
@@ -40,6 +43,17 @@ export default function SaaSMainDashboard() {
 
         {/* AI EMPLOYEE SELECTOR SWITCHER */}
         <div className="flex items-center bg-slate-900 border border-slate-800 p-1 rounded-2xl shadow-inner overflow-x-auto">
+          <button
+            onClick={() => setActiveTab('research')}
+            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition ${
+              activeTab === 'research'
+                ? "bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-md shadow-blue-500/20"
+                : "text-slate-400 hover:text-slate-200"
+            }`}
+          >
+            <Search className="w-4 h-4" />
+            AI-01 Research
+          </button>
           <button
             onClick={() => setActiveTab('copywriter')}
             className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition ${
@@ -84,6 +98,17 @@ export default function SaaSMainDashboard() {
             <BarChart3 className="w-4 h-4" />
             AI-05 Ads Manager
           </button>
+          <button
+            onClick={() => setActiveTab('billing')}
+            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition ${
+              activeTab === 'billing'
+                ? "bg-gradient-to-r from-emerald-600 via-teal-600 to-blue-600 text-white shadow-md shadow-emerald-500/20"
+                : "text-slate-400 hover:text-slate-200"
+            }`}
+          >
+            <CreditCard className="w-4 h-4" />
+            Billing & Analytics
+          </button>
         </div>
 
         <div className="hidden sm:flex items-center gap-3">
@@ -103,18 +128,22 @@ export default function SaaSMainDashboard() {
             </div>
             <div>
               <h2 className="text-sm font-bold text-white flex items-center gap-2">
+                {activeTab === 'research' && 'AI-01 Periset Pasar AI (Product Winning)'}
                 {activeTab === 'copywriter' && 'AI-02 Penulis Iklan Conversional'}
                 {activeTab === 'designer' && 'AI-03 Desainer Brand Studio Canva'}
                 {activeTab === 'video' && 'AI-04 Editor Video AI Vertical 9:16'}
                 {activeTab === 'ads' && 'AI-05 Media Buyer AI & Campaign Optimizer'}
+                {activeTab === 'billing' && 'Subscription, Midtrans/Stripe Billing & SaaS Analytics'}
                 <span className="text-slate-500">|</span>
                 <span className="text-slate-400 text-xs font-normal">Karyawan AI Aktif</span>
               </h2>
               <p className="text-xs text-slate-400">
+                {activeTab === 'research' && 'Analisis kelayakan produk winning Meta Ads Library (FB & IG), Shopee, Tokopedia, TikTok Shop, Amazon & Google Trends.'}
                 {activeTab === 'copywriter' && 'Menghasilkan 20+ variasi Hook, Headline, Primary Text Meta Ads, Landing Page Copy, Marketplace & Email.'}
                 {activeTab === 'designer' && 'Menghasilkan Banner Ads, Instagram Feed, Cover Marketplace, Poster & Logo Concept otomatis.'}
                 {activeTab === 'video' && 'Membuat Script AI, Scene Gen, AI Voiceover, Subtitle Otomatis & Avatar Presenter 9:16 MP4.'}
                 {activeTab === 'ads' && 'Rekomendasi Campaign, Target Audience, Scaling Strategy, Kill Ads Rules & AI Insights Dashboard.'}
+                {activeTab === 'billing' && 'Kelola Paket Langganan, Pengisian Credit, Mutasi Transaksi, Metriks MRR & Supabase Security Audit.'}
               </p>
             </div>
           </div>
@@ -128,10 +157,12 @@ export default function SaaSMainDashboard() {
 
       {/* MAIN CONTENT WORKSPACE */}
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 lg:p-8">
+        {activeTab === 'research' && <ProductResearchView />}
         {activeTab === 'copywriter' && <CopywriterView />}
         {activeTab === 'designer' && <CreativeDesignerView />}
         {activeTab === 'video' && <VideoCreatorView />}
         {activeTab === 'ads' && <AdsManagerView />}
+        {activeTab === 'billing' && <SaaSAdminBillingAnalyticsView />}
       </main>
 
       {/* FOOTER */}

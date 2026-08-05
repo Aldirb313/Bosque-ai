@@ -1,3 +1,92 @@
+export interface ProductResearchInput {
+  keyword: string;
+  category: string;
+  targetMarket: string;
+  country: string;
+  targetPrice: string;
+}
+
+export interface MarketplaceItem {
+  platform: 'Shopee' | 'Tokopedia' | 'Amazon' | 'TikTok Shop' | 'Meta Ads Library & Shop';
+  volumeText: string;
+  searchVolume: number; // 0-100 scale
+  avgPrice: string;
+  competitionLevel: 'Low' | 'Medium' | 'High' | 'Very High';
+  topStoresCount: number;
+}
+
+export interface TrendSignal {
+  source: 'Google Trends' | 'TikTok Trend' | 'Meta Signals (FB & IG)' | 'Social Media Signal';
+  score: number; // 0-100
+  statusText: string;
+  growthRate: string; // e.g. "+145% MoM"
+}
+
+export interface WinningProductRecommendation {
+  id: string;
+  name: string;
+  category: string;
+  trendStatus: string;
+  estSupplierPrice: string;
+  estSellingPrice: string;
+  potentialProfitMargin: string;
+  viralScore: number; // 0-100
+  reasonWhyWinning: string;
+}
+
+export interface ProductResearchOutput {
+  id: string;
+  createdAt: string;
+  input: ProductResearchInput;
+  productName: string;
+  overallScore: number; // 0-100
+  details: {
+    demandScore: number; // 0-100%
+    competitionScore: number; // 0-100%
+    profitMarginScore: number; // 0-100%
+    viralPotentialScore: number; // 0-100%
+    marketOpportunityScore: number; // 0-100%
+  };
+  marketplaces: MarketplaceItem[];
+  trendAnalysis: TrendSignal[];
+  aiRecommendation: string;
+  estimatedProfitRange: string;
+  winningAngles: string[];
+  winningProducts: WinningProductRecommendation[];
+}
+
+// SUBSCRIPTION & CREDIT SYSTEM TYPES
+export type PlanTier = 'FREE' | 'PRO' | 'BUSINESS';
+
+export interface UserSubscription {
+  plan: PlanTier;
+  creditsRemaining: number;
+  monthlyLimit: number;
+  renewsAt: string;
+  status: 'active' | 'canceled' | 'past_due';
+  paymentGateway: 'Stripe' | 'Midtrans';
+}
+
+export interface CreditTransaction {
+  id: string;
+  timestamp: string;
+  action: string;
+  amount: number; // negative for usage, positive for topup
+  balanceAfter: number;
+  employeeType: 'AI-01 Research' | 'AI-02 Copywriter' | 'AI-03 Designer' | 'AI-04 Video' | 'AI-05 Ads';
+}
+
+export interface AnalyticsMetrics {
+  totalUsers: number;
+  activeUsers: number;
+  mrr: number; // Monthly Recurring Revenue (IDR/USD)
+  churnRate: number; // percentage
+  retentionRate: number; // percentage
+  totalAiCreditsUsed: number;
+  dailyUsageTrend: { date: string; usage: number }[];
+  revenueTrend: { month: string; amount: number }[];
+}
+
 export interface CopywriterInput {
   product: string;
   targetCustomer: string;
