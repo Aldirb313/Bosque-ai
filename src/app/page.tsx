@@ -27,9 +27,11 @@ import {
 export default function SaaSMainDashboard() {
   const [activeTab, setActiveTab] = useState<'orchestrator' | 'research' | 'copywriter' | 'designer' | 'video' | 'ads' | 'billing'>('orchestrator');
   const [session, setSession] = useState<UserSession | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
 
-  // Check saved session
+  // Check saved session on mount
   useEffect(() => {
+    setIsMounted(true);
     try {
       const saved = localStorage.getItem("bosque_ai_session_v1");
       if (saved) {
@@ -54,8 +56,8 @@ export default function SaaSMainDashboard() {
     localStorage.removeItem("bosque_ai_session_v1");
   };
 
-  // If user is not logged in, render Auth Modal
-  if (!session) {
+  // If not mounted yet or user is not logged in, render Auth Modal
+  if (!isMounted || !session) {
     return <AuthModal onLoginSuccess={handleLoginSuccess} />;
   }
 
