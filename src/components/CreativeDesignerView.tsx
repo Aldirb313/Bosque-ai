@@ -271,214 +271,252 @@ export default function CreativeDesignerView() {
 
             {/* MAIN CANVA STUDIO EDITOR WORKSPACE */}
             {selectedAsset && (
-              <div className="grid grid-cols-1 xl:grid-cols-12 gap-5 items-start">
+              <div className="flex flex-col gap-5">
                 
-                {/* CANVAS PREVIEW (8 COLS) */}
-                <div className="xl:col-span-8 bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col items-center justify-center min-h-[520px] shadow-2xl relative overflow-hidden">
-                  {/* Canvas Background Pattern */}
-                  <div className="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:16px_16px] opacity-40 pointer-events-none" />
-
-                  {/* Header Actions Bar */}
-                  <div className="w-full flex items-center justify-between mb-4 z-10">
+                {/* CREATIVE BRIEF GENERATOR CARD PANEL */}
+                <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl flex flex-col gap-3">
+                  <div className="flex items-center justify-between border-b border-slate-800 pb-3">
                     <div className="flex items-center gap-2">
-                      <span className="px-2.5 py-1 rounded-md bg-indigo-500/20 text-indigo-300 font-mono text-[11px] font-bold border border-indigo-500/30">
-                        {selectedAsset.aspectRatio} ({selectedAsset.dimensions})
-                      </span>
-                      <h3 className="font-bold text-white text-sm">{selectedAsset.title}</h3>
+                      <Sparkles className="w-4 h-4 text-purple-400" />
+                      <h3 className="font-bold text-white text-sm">AI Creative Brief Generator</h3>
                     </div>
-
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => handleRegenerateSingle(selectedAsset.id)}
-                        disabled={isRegenerating === selectedAsset.id}
-                        className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium border border-slate-700 flex items-center gap-1.5 transition disabled:opacity-50"
-                      >
-                        <RefreshCw className={`w-3.5 h-3.5 text-indigo-400 ${isRegenerating === selectedAsset.id ? "animate-spin" : ""}`} />
-                        Regenerate Image
-                      </button>
-                      <button
-                        onClick={() => handleDownload(selectedAsset)}
-                        className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:brightness-110 text-white text-xs font-bold shadow-md shadow-indigo-500/20 flex items-center gap-1.5 transition"
-                      >
-                        <Download className="w-3.5 h-3.5" />
-                        Download Asset
-                      </button>
+                    <span className="px-2.5 py-0.5 rounded-full bg-purple-500/10 border border-purple-500/30 text-purple-300 font-mono text-[10px] font-bold">
+                      {currentResult.input.style}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-3 text-xs">
+                    <div className="bg-slate-950 p-3 rounded-xl border border-slate-800">
+                      <span className="text-slate-500 font-bold block text-[10px] uppercase">Konsep Visual</span>
+                      <span className="text-slate-200 font-semibold mt-1 block">{currentResult.input.style} aesthetic with bold focal product photography</span>
+                    </div>
+                    <div className="bg-slate-950 p-3 rounded-xl border border-slate-800">
+                      <span className="text-slate-500 font-bold block text-[10px] uppercase">Palet Warna Utama</span>
+                      <div className="flex items-center gap-1.5 mt-1.5">
+                        {['#6366f1', '#ec4899', '#0f172a', '#f8fafc'].map((c) => (
+                          <span key={c} className="w-4 h-4 rounded-full border border-white/20" style={{ backgroundColor: c }} />
+                        ))}
+                      </div>
+                    </div>
+                    <div className="bg-slate-950 p-3 rounded-xl border border-slate-800">
+                      <span className="text-slate-500 font-bold block text-[10px] uppercase">Layout & Typography</span>
+                      <span className="text-slate-200 font-semibold mt-1 block">Hero Headline Top-Left, CTA Button Bottom-Right</span>
+                    </div>
+                    <div className="bg-slate-950 p-3 rounded-xl border border-slate-800">
+                      <span className="text-slate-500 font-bold block text-[10px] uppercase">Target Copy In Image</span>
+                      <span className="text-amber-400 font-bold mt-1 block">Problem-Solving Hook & Diskon Badge</span>
                     </div>
                   </div>
+                </div>
 
-                  {/* THE GRAPHICAL BANNER CANVAS */}
-                  <div 
-                    className="relative rounded-xl overflow-hidden shadow-2xl transition-all duration-300 group flex items-center justify-center max-w-full"
-                    style={{
-                      aspectRatio: selectedAsset.aspectRatio === '16:9' ? '16/9' : selectedAsset.aspectRatio === '9:16' ? '9/16' : '1/1',
-                      width: selectedAsset.aspectRatio === '9:16' ? '300px' : '100%',
-                      maxHeight: '460px'
-                    }}
-                  >
-                    {/* Background AI Generated Image */}
-                    {selectedAsset.imageUrl ? (
-                      <img
-                        src={selectedAsset.imageUrl}
-                        alt={selectedAsset.title}
-                        className="absolute inset-0 w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="absolute inset-0 bg-slate-950 flex items-center justify-center">
-                        <ImageIcon className="w-12 h-12 text-slate-800" />
-                      </div>
-                    )}
+                <div className="grid grid-cols-1 xl:grid-cols-12 gap-5 items-start">
+                  
+                  {/* CANVAS PREVIEW (8 COLS) */}
+                  <div className="xl:col-span-8 bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col items-center justify-center min-h-[520px] shadow-2xl relative overflow-hidden">
+                    {/* Canvas Background Pattern */}
+                    <div className="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:16px_16px] opacity-40 pointer-events-none" />
 
-                    {/* Gradient Overlay for Text Legibility */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent opacity-85" />
-
-                    {/* OVERLAY GRAPHIC ELEMENTS & TYPOGRAPHY */}
-                    <div className="absolute inset-0 p-6 flex flex-col justify-between z-10 text-white">
-                      
-                      {/* Top Badge & Brand Name */}
-                      <div className="flex items-start justify-between">
-                        {selectedAsset.badge && (
-                          <span 
-                            className="px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest shadow-lg"
-                            style={{ backgroundColor: selectedAsset.accentColor, color: '#090d16' }}
-                          >
-                            {selectedAsset.badge}
-                          </span>
-                        )}
-                        <span className="font-mono text-xs font-black tracking-wider text-slate-300 backdrop-blur-md bg-black/40 px-2.5 py-1 rounded-lg border border-white/10">
-                          {currentResult.input.brandName.toUpperCase()}
+                    {/* Header Actions Bar */}
+                    <div className="w-full flex items-center justify-between mb-4 z-10">
+                      <div className="flex items-center gap-2">
+                        <span className="px-2.5 py-1 rounded-md bg-indigo-500/20 text-indigo-300 font-mono text-[11px] font-bold border border-indigo-500/30">
+                          {selectedAsset.aspectRatio} ({selectedAsset.dimensions})
                         </span>
+                        <h3 className="font-bold text-white text-sm">{selectedAsset.title}</h3>
                       </div>
 
-                      {/* Middle / Bottom Headline & CTA */}
-                      <div className="flex flex-col gap-2">
-                        <h2 className="text-xl md:text-2xl font-black tracking-tight drop-shadow-md text-white leading-tight uppercase">
-                          {selectedAsset.headline}
-                        </h2>
-                        <p className="text-xs md:text-sm text-slate-200 font-medium drop-shadow-sm line-clamp-2">
-                          {selectedAsset.subtext}
-                        </p>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => handleRegenerateSingle(selectedAsset.id)}
+                          disabled={isRegenerating === selectedAsset.id}
+                          className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium border border-slate-700 flex items-center gap-1.5 transition disabled:opacity-50"
+                        >
+                          <RefreshCw className={`w-3.5 h-3.5 text-indigo-400 ${isRegenerating === selectedAsset.id ? "animate-spin" : ""}`} />
+                          Regenerate Image
+                        </button>
+                        <button
+                          onClick={() => handleDownload(selectedAsset)}
+                          className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:brightness-110 text-white text-xs font-bold shadow-md shadow-indigo-500/20 flex items-center gap-1.5 transition"
+                        >
+                          <Download className="w-3.5 h-3.5" />
+                          Download Asset
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* THE GRAPHICAL BANNER CANVAS */}
+                    <div 
+                      className="relative rounded-xl overflow-hidden shadow-2xl transition-all duration-300 group flex items-center justify-center max-w-full"
+                      style={{
+                        aspectRatio: selectedAsset.aspectRatio === '16:9' ? '16/9' : selectedAsset.aspectRatio === '9:16' ? '9/16' : '1/1',
+                        width: selectedAsset.aspectRatio === '9:16' ? '300px' : '100%',
+                        maxHeight: '460px'
+                      }}
+                    >
+                      {/* Background AI Generated Image */}
+                      {selectedAsset.imageUrl ? (
+                        <img
+                          src={selectedAsset.imageUrl}
+                          alt={selectedAsset.title}
+                          className="absolute inset-0 w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="absolute inset-0 bg-slate-950 flex items-center justify-center">
+                          <ImageIcon className="w-12 h-12 text-slate-800" />
+                        </div>
+                      )}
+
+                      {/* Gradient Overlay for Text Legibility */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent opacity-85" />
+
+                      {/* OVERLAY GRAPHIC ELEMENTS & TYPOGRAPHY */}
+                      <div className="absolute inset-0 p-6 flex flex-col justify-between z-10 text-white">
                         
-                        {/* Dynamic CTA Button */}
-                        <div className="mt-2 flex items-center gap-3">
-                          <button
-                            className="px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider shadow-xl transition transform active:scale-95 flex items-center gap-1.5"
-                            style={{ backgroundColor: selectedAsset.accentColor, color: '#0f172a' }}
-                          >
-                            {selectedAsset.ctaText}
-                          </button>
+                        {/* Top Badge & Brand Name */}
+                        <div className="flex items-start justify-between">
+                          {selectedAsset.badge && (
+                            <span 
+                              className="px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest shadow-lg"
+                              style={{ backgroundColor: selectedAsset.accentColor, color: '#090d16' }}
+                            >
+                              {selectedAsset.badge}
+                            </span>
+                          )}
+                          <span className="font-mono text-xs font-black tracking-wider text-slate-300 backdrop-blur-md bg-black/40 px-2.5 py-1 rounded-lg border border-white/10">
+                            {currentResult.input.brandName.toUpperCase()}
+                          </span>
+                        </div>
+
+                        {/* Middle / Bottom Headline & CTA */}
+                        <div className="flex flex-col gap-2">
+                          <h2 className="text-xl md:text-2xl font-black tracking-tight drop-shadow-md text-white leading-tight uppercase">
+                            {selectedAsset.headline}
+                          </h2>
+                          <p className="text-xs md:text-sm text-slate-200 font-medium drop-shadow-sm line-clamp-2">
+                            {selectedAsset.subtext}
+                          </p>
+                          
+                          {/* Dynamic CTA Button */}
+                          <div className="mt-2 flex items-center gap-3">
+                            <button
+                              className="px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider shadow-xl transition transform active:scale-95 flex items-center gap-1.5"
+                              style={{ backgroundColor: selectedAsset.accentColor, color: '#0f172a' }}
+                            >
+                              {selectedAsset.ctaText}
+                            </button>
+                          </div>
+                        </div>
+
+                      </div>
+                    </div>
+
+                    {/* AI Prompt Details Footnote */}
+                    <div className="w-full mt-4 bg-slate-950/80 border border-slate-800 rounded-xl p-3 text-xs text-slate-400 flex items-start gap-2 z-10">
+                      <Sparkles className="w-4 h-4 text-indigo-400 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <strong className="text-slate-300">Image Generation Prompt:</strong> {selectedAsset.prompt}
+                      </div>
+                    </div>
+
+                  </div>
+
+                  {/* EDIT SIDEBAR CONTROLS (4 COLS) */}
+                  <div className="xl:col-span-4 bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col gap-4">
+                    <div className="flex items-center gap-2 border-b border-slate-800 pb-3">
+                      <Sliders className="w-4 h-4 text-indigo-400" />
+                      <h3 className="font-bold text-white text-sm">Design Customizer</h3>
+                    </div>
+
+                    <div className="flex flex-col gap-3 text-xs">
+                      <div>
+                        <label className="text-slate-400 font-semibold mb-1 block">Headline Text</label>
+                        <input
+                          type="text"
+                          value={selectedAsset.headline}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setSelectedAsset({ ...selectedAsset, headline: val });
+                          }}
+                          className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 text-xs focus:outline-none focus:border-indigo-500"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="text-slate-400 font-semibold mb-1 block">Subtext / Description</label>
+                        <input
+                          type="text"
+                          value={selectedAsset.subtext}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setSelectedAsset({ ...selectedAsset, subtext: val });
+                          }}
+                          className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 text-xs focus:outline-none focus:border-indigo-500"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="text-slate-400 font-semibold mb-1 block">CTA Button Text</label>
+                        <input
+                          type="text"
+                          value={selectedAsset.ctaText}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setSelectedAsset({ ...selectedAsset, ctaText: val });
+                          }}
+                          className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 text-xs focus:outline-none focus:border-indigo-500"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="text-slate-400 font-semibold mb-1 block">Badge Text</label>
+                        <input
+                          type="text"
+                          value={selectedAsset.badge || ""}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setSelectedAsset({ ...selectedAsset, badge: val });
+                          }}
+                          className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 text-xs focus:outline-none focus:border-indigo-500"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="text-slate-400 font-semibold mb-1 block">Accent Theme Color</label>
+                        <div className="flex items-center gap-2">
+                          {['#6366f1', '#ec4899', '#10b981', '#f59e0b', '#ef4444', '#3b82f6'].map((color) => (
+                            <button
+                              key={color}
+                              onClick={() => setSelectedAsset({ ...selectedAsset, accentColor: color })}
+                              className={`w-6 h-6 rounded-full border-2 transition ${
+                                selectedAsset.accentColor === color ? "scale-110 border-white" : "border-transparent"
+                              }`}
+                              style={{ backgroundColor: color }}
+                            />
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="pt-2 border-t border-slate-800 flex flex-col gap-2">
+                        <span className="text-slate-400 font-semibold text-[11px]">All Generated Formats in Pack:</span>
+                        <div className="grid grid-cols-2 gap-1.5">
+                          {currentResult.assets.map((a) => (
+                            <div
+                              key={a.id}
+                              onClick={() => setSelectedAsset(a)}
+                              className={`p-2 rounded-lg border text-[11px] cursor-pointer transition ${
+                                selectedAsset.id === a.id ? "bg-indigo-950/60 border-indigo-500 text-indigo-300" : "bg-slate-950/40 border-slate-800 text-slate-400"
+                              }`}
+                            >
+                              <div className="font-bold truncate">{a.type}</div>
+                              <div className="text-[9px] text-slate-500">{a.aspectRatio}</div>
+                            </div>
+                          ))}
                         </div>
                       </div>
 
                     </div>
                   </div>
 
-                  {/* AI Prompt Details Footnote */}
-                  <div className="w-full mt-4 bg-slate-950/80 border border-slate-800 rounded-xl p-3 text-xs text-slate-400 flex items-start gap-2 z-10">
-                    <Sparkles className="w-4 h-4 text-indigo-400 flex-shrink-0 mt-0.5" />
-                    <div>
-                      <strong className="text-slate-300">Image Generation Prompt:</strong> {selectedAsset.prompt}
-                    </div>
-                  </div>
-
                 </div>
-
-                {/* EDIT SIDEBAR CONTROLS (4 COLS) */}
-                <div className="xl:col-span-4 bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col gap-4">
-                  <div className="flex items-center gap-2 border-b border-slate-800 pb-3">
-                    <Sliders className="w-4 h-4 text-indigo-400" />
-                    <h3 className="font-bold text-white text-sm">Design Customizer</h3>
-                  </div>
-
-                  <div className="flex flex-col gap-3 text-xs">
-                    <div>
-                      <label className="text-slate-400 font-semibold mb-1 block">Headline Text</label>
-                      <input
-                        type="text"
-                        value={selectedAsset.headline}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          setSelectedAsset({ ...selectedAsset, headline: val });
-                        }}
-                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 text-xs focus:outline-none focus:border-indigo-500"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="text-slate-400 font-semibold mb-1 block">Subtext / Description</label>
-                      <input
-                        type="text"
-                        value={selectedAsset.subtext}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          setSelectedAsset({ ...selectedAsset, subtext: val });
-                        }}
-                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 text-xs focus:outline-none focus:border-indigo-500"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="text-slate-400 font-semibold mb-1 block">CTA Button Text</label>
-                      <input
-                        type="text"
-                        value={selectedAsset.ctaText}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          setSelectedAsset({ ...selectedAsset, ctaText: val });
-                        }}
-                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 text-xs focus:outline-none focus:border-indigo-500"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="text-slate-400 font-semibold mb-1 block">Badge Text</label>
-                      <input
-                        type="text"
-                        value={selectedAsset.badge || ""}
-                        onChange={(e) => {
-                          const val = e.target.value;
-                          setSelectedAsset({ ...selectedAsset, badge: val });
-                        }}
-                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 text-xs focus:outline-none focus:border-indigo-500"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="text-slate-400 font-semibold mb-1 block">Accent Theme Color</label>
-                      <div className="flex items-center gap-2">
-                        {['#6366f1', '#ec4899', '#10b981', '#f59e0b', '#ef4444', '#3b82f6'].map((color) => (
-                          <button
-                            key={color}
-                            onClick={() => setSelectedAsset({ ...selectedAsset, accentColor: color })}
-                            className={`w-6 h-6 rounded-full border-2 transition ${
-                              selectedAsset.accentColor === color ? "scale-110 border-white" : "border-transparent"
-                            }`}
-                            style={{ backgroundColor: color }}
-                          />
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="pt-2 border-t border-slate-800 flex flex-col gap-2">
-                      <span className="text-slate-400 font-semibold text-[11px]">All Generated Formats in Pack:</span>
-                      <div className="grid grid-cols-2 gap-1.5">
-                        {currentResult.assets.map((a) => (
-                          <div
-                            key={a.id}
-                            onClick={() => setSelectedAsset(a)}
-                            className={`p-2 rounded-lg border text-[11px] cursor-pointer transition ${
-                              selectedAsset.id === a.id ? "bg-indigo-950/60 border-indigo-500 text-indigo-300" : "bg-slate-950/40 border-slate-800 text-slate-400"
-                            }`}
-                          >
-                            <div className="font-bold truncate">{a.type}</div>
-                            <div className="text-[9px] text-slate-500">{a.aspectRatio}</div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                  </div>
-                </div>
-
               </div>
             )}
           </div>

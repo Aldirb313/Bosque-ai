@@ -1,13 +1,16 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import CEOOrchestratorView from "@/components/CEOOrchestratorView";
 import ProductResearchView from "@/components/ProductResearchView";
 import CopywriterView from "@/components/CopywriterView";
 import CreativeDesignerView from "@/components/CreativeDesignerView";
 import VideoCreatorView from "@/components/VideoCreatorView";
 import AdsManagerView from "@/components/AdsManagerView";
 import SaaSAdminBillingAnalyticsView from "@/components/SaaSAdminBillingAnalyticsView";
+import AuthModal, { UserSession } from "@/components/AuthModal";
 import { 
+  Crown,
   Search,
   Bot, 
   Zap, 
@@ -16,11 +19,45 @@ import {
   BarChart3, 
   Sparkles, 
   ShieldCheck, 
-  CreditCard
+  CreditCard,
+  LogOut,
+  UserCheck
 } from "lucide-react";
 
 export default function SaaSMainDashboard() {
-  const [activeTab, setActiveTab] = useState<'research' | 'copywriter' | 'designer' | 'video' | 'ads' | 'billing'>('research');
+  const [activeTab, setActiveTab] = useState<'orchestrator' | 'research' | 'copywriter' | 'designer' | 'video' | 'ads' | 'billing'>('orchestrator');
+  const [session, setSession] = useState<UserSession | null>(null);
+
+  // Check saved session
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("bosque_ai_session_v1");
+      if (saved) {
+        setSession(JSON.parse(saved));
+      }
+    } catch {
+      // no session
+    }
+  }, []);
+
+  const handleLoginSuccess = (newSession: UserSession) => {
+    setSession(newSession);
+    try {
+      localStorage.setItem("bosque_ai_session_v1", JSON.stringify(newSession));
+    } catch {
+      // ignore
+    }
+  };
+
+  const handleLogout = () => {
+    setSession(null);
+    localStorage.removeItem("bosque_ai_session_v1");
+  };
+
+  // If user is not logged in, render Auth Modal
+  if (!session) {
+    return <AuthModal onLoginSuccess={handleLoginSuccess} />;
+  }
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-indigo-500 selection:text-white">
@@ -34,15 +71,26 @@ export default function SaaSMainDashboard() {
             <div className="flex items-center gap-2">
               <h1 className="font-extrabold text-white text-lg tracking-tight">BOSQUE AI</h1>
               <span className="px-2 py-0.5 rounded-full bg-gradient-to-r from-amber-500/20 via-pink-500/20 to-emerald-500/20 border border-amber-500/30 text-amber-300 font-mono text-[10px] font-bold">
-                SAAS V3.0 FULL SUITE
+                AI OS V4.0 OPERATING SYSTEM
               </span>
             </div>
-            <p className="text-xs text-slate-400">Autonomous AI Employees Platform</p>
+            <p className="text-xs text-slate-400">Lu Jadi Bos. 5 Karyawan AI Lu Yang Kerja.</p>
           </div>
         </div>
 
         {/* AI EMPLOYEE SELECTOR SWITCHER */}
         <div className="flex items-center bg-slate-900 border border-slate-800 p-1 rounded-2xl shadow-inner overflow-x-auto">
+          <button
+            onClick={() => setActiveTab('orchestrator')}
+            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition ${
+              activeTab === 'orchestrator'
+                ? "bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 shadow-md shadow-amber-500/20"
+                : "text-amber-400 hover:text-amber-300"
+            }`}
+          >
+            <Crown className="w-4 h-4" />
+            AI CEO Orchestrator
+          </button>
           <button
             onClick={() => setActiveTab('research')}
             className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition ${
@@ -85,7 +133,7 @@ export default function SaaSMainDashboard() {
             }`}
           >
             <Video className="w-4 h-4" />
-            AI-04 Video Creator
+            AI-04 Video
           </button>
           <button
             onClick={() => setActiveTab('ads')}
@@ -96,7 +144,7 @@ export default function SaaSMainDashboard() {
             }`}
           >
             <BarChart3 className="w-4 h-4" />
-            AI-05 Ads Manager
+            AI-05 Ads
           </button>
           <button
             onClick={() => setActiveTab('billing')}
@@ -107,15 +155,38 @@ export default function SaaSMainDashboard() {
             }`}
           >
             <CreditCard className="w-4 h-4" />
-            Billing & Analytics
+            Billing
           </button>
         </div>
 
+        {/* LOGGED-IN USER PROFILE & LOGOUT */}
         <div className="hidden sm:flex items-center gap-3">
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-emerald-400 font-semibold">
-            <ShieldCheck className="w-4 h-4 text-emerald-400" />
-            Database Active
+          <div className="flex items-center gap-2.5 px-3 py-1.5 rounded-2xl bg-slate-900 border border-slate-800">
+            {session.avatarUrl ? (
+              <img src={session.avatarUrl} alt={session.name} className="w-7 h-7 rounded-full object-cover border border-amber-500/40" />
+            ) : (
+              <div className="w-7 h-7 rounded-full bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-300 font-bold text-xs">
+                {session.name.charAt(0)}
+              </div>
+            )}
+            <div className="text-left">
+              <div className="text-xs font-bold text-white leading-tight flex items-center gap-1">
+                {session.name}
+                <span className="px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 text-[9px] font-mono">
+                  {session.loginMethod}
+                </span>
+              </div>
+              <div className="text-[10px] text-slate-400 leading-tight">{session.role}</div>
+            </div>
           </div>
+
+          <button
+            onClick={handleLogout}
+            title="Keluar / Logout"
+            className="p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-red-400 hover:border-red-500/30 transition"
+          >
+            <LogOut className="w-4 h-4" />
+          </button>
         </div>
       </header>
 
@@ -128,6 +199,7 @@ export default function SaaSMainDashboard() {
             </div>
             <div>
               <h2 className="text-sm font-bold text-white flex items-center gap-2">
+                {activeTab === 'orchestrator' && 'AI CEO Orchestrator & Approval Center'}
                 {activeTab === 'research' && 'AI-01 Periset Pasar AI (Product Winning)'}
                 {activeTab === 'copywriter' && 'AI-02 Penulis Iklan Conversional'}
                 {activeTab === 'designer' && 'AI-03 Desainer Brand Studio Canva'}
@@ -135,9 +207,10 @@ export default function SaaSMainDashboard() {
                 {activeTab === 'ads' && 'AI-05 Media Buyer AI & Campaign Optimizer'}
                 {activeTab === 'billing' && 'Subscription, Midtrans/Stripe Billing & SaaS Analytics'}
                 <span className="text-slate-500">|</span>
-                <span className="text-slate-400 text-xs font-normal">Karyawan AI Aktif</span>
+                <span className="text-slate-400 text-xs font-normal">Executive Mode</span>
               </h2>
               <p className="text-xs text-slate-400">
+                {activeTab === 'orchestrator' && 'Koordinator utama 5 Karyawan AI, Approval Inbox, Laporan WhatsApp/Telegram & Activity Timeline.'}
                 {activeTab === 'research' && 'Analisis kelayakan produk winning Meta Ads Library (FB & IG), Shopee, Tokopedia, TikTok Shop, Amazon & Google Trends.'}
                 {activeTab === 'copywriter' && 'Menghasilkan 20+ variasi Hook, Headline, Primary Text Meta Ads, Landing Page Copy, Marketplace & Email.'}
                 {activeTab === 'designer' && 'Menghasilkan Banner Ads, Instagram Feed, Cover Marketplace, Poster & Logo Concept otomatis.'}
@@ -150,13 +223,14 @@ export default function SaaSMainDashboard() {
 
           <div className="flex items-center gap-2 text-xs font-medium text-slate-400">
             <Sparkles className="w-4 h-4 text-amber-400 animate-pulse" />
-            <span>AI Model Engine v4.5 Ready</span>
+            <span>AI Business System v4.0 Active</span>
           </div>
         </div>
       </div>
 
       {/* MAIN CONTENT WORKSPACE */}
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 lg:p-8">
+        {activeTab === 'orchestrator' && <CEOOrchestratorView />}
         {activeTab === 'research' && <ProductResearchView />}
         {activeTab === 'copywriter' && <CopywriterView />}
         {activeTab === 'designer' && <CreativeDesignerView />}
@@ -177,7 +251,7 @@ export default function SaaSMainDashboard() {
           <span>•</span>
           <span className="hover:text-white cursor-pointer">AI-05 Ads Manager</span>
           <span>•</span>
-          <span className="hover:text-white cursor-pointer">Database Status: Connected</span>
+          <span className="hover:text-white cursor-pointer">Authenticated as: {session.name} ({session.email})</span>
         </div>
       </footer>
     </div>

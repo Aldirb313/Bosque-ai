@@ -300,14 +300,25 @@ export default function AdsManagerView() {
                       <React.Fragment key={c.id}>
                         <tr className="hover:bg-slate-800/40 transition">
                           <td className="p-3">
-                            <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold border ${
-                              c.status === 'Active' ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30" :
-                              c.status === 'Scale' ? "bg-indigo-500/10 text-indigo-400 border-indigo-500/30" :
-                              c.status === 'Learning' ? "bg-amber-500/10 text-amber-400 border-amber-500/30" :
-                              "bg-red-500/10 text-red-400 border-red-500/30"
-                            }`}>
-                              {c.status}
-                            </span>
+                            <div className="flex flex-col gap-1">
+                              <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold border w-fit ${
+                                c.status === 'Active' ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30" :
+                                c.status === 'Scale' ? "bg-indigo-500/10 text-indigo-400 border-indigo-500/30" :
+                                c.status === 'Learning' ? "bg-amber-500/10 text-amber-400 border-amber-500/30" :
+                                "bg-red-500/10 text-red-400 border-red-500/30"
+                              }`}>
+                                {c.status}
+                              </span>
+                              <span className={`px-2 py-0.5 rounded text-[9px] font-extrabold font-mono uppercase tracking-wider w-fit ${
+                                c.roas >= 3.5 || c.status === 'Scale'
+                                  ? "bg-emerald-500 text-slate-950 shadow-sm"
+                                  : c.roas < 1.5 || c.status === 'Stop'
+                                  ? "bg-red-600 text-white animate-pulse"
+                                  : "bg-slate-800 text-slate-300"
+                              }`}>
+                                {c.roas >= 3.5 || c.status === 'Scale' ? '🚀 SCALE ACTION' : c.roas < 1.5 || c.status === 'Stop' ? '💀 KILL AD' : '⚡ OPTIMIZING'}
+                              </span>
+                            </div>
                           </td>
                           <td className="p-3 font-semibold text-white">{c.name}</td>
                           <td className="p-3 font-mono">{c.budgetDaily}</td>

@@ -528,6 +528,40 @@ const INITIAL_COPYWRITER_HISTORY: CopywriterOutput[] = [
       "Jangan Biarkan Penuaan Dini Merusak Penampilanmu – Rawat Dengan GlowSkin",
       "Special Promo Hari Ini: Beli GlowSkin Hemat Hingga 50% + Gratis Ongkir!"
     ],
+    marketingAngles: [
+      {
+        angleName: "Problem-Solving Angle",
+        description: "Fokus langsung ke masalah flek hitam dan solusi instan 7 hari.",
+        exampleCopy: "Flek hitam membandel bikin gak pede? Coba solusi GlowSkin ini!"
+      },
+      {
+        angleName: "Social Proof Angle",
+        description: "Menekankan 15.000+ pembeli puas dan review positif.",
+        exampleCopy: "Lebih dari 15.000 wanita Indonesia sudah membuktikan hasilnya dalam 7 hari!"
+      },
+      {
+        angleName: "Urgency & Scarcity Angle",
+        description: "Promo diskon khusus terbatas hari ini.",
+        exampleCopy: "Diskon 50% khusus 50 pembeli pertama hari ini saja!"
+      },
+      {
+        angleName: "Value/Economy Angle",
+        description: "Bandingkan biaya murah vs perawatan klinik mahal.",
+        exampleCopy: "Hemat jutaan rupiah ketimbang ke klinik kecantikan!"
+      },
+      {
+        angleName: "Before-After Transformation Angle",
+        description: "Fokus ke hasil dramatis kulit kusam jadi glowing.",
+        exampleCopy: "Dari kulit kusam tampak lelah jadi glowing segar hanya dalam seminggu."
+      }
+    ],
+    ctaVariations: [
+      "Beli Sekarang & Dapatkan Diskon 50%!",
+      "Klaim Promo Spesial Hari Ini Sebelum Kehabisan!",
+      "Pesan via WhatsApp Sekarang untuk Konsultasi Gratis!",
+      "Klik Di Sini Untuk Bebas Flek Hitam Dalam 7 Hari!",
+      "Ambil Promo Bundling Hemat 2 Pcs Sekarang!"
+    ],
     primaryTextMetaAds: [
       "Capek nyobain berbagai macam serum tapi noda hitam & bekas jerawat gak hilang-hilang? 🤔\n\nKenalkan GlowSkin Vitamin C Serum dengan teknologi Micro-Encapsulated Triple C + Hyaluronic 3D. Meresap hingga lapisan kulit terdalam untuk menyamarkan flek hitam dan mencerahkan wajah hanya dalam 7 hari!\n\n✨ Mengapa GlowSkin?\n✅ Mencerahkan 10x lebih efektif tanpa rasa perih\n✅ Menjaga kelembapan 24 jam dengan Hyaluronic 3D\n✅ Aman untuk kulit sensitif, BPOM & Halal Certified\n\n🎉 Promo Khusus Hari Ini: Hanya Rp 149.000 (Harga Normal Rp 299.000) + Extra Gratis Ongkir ke Seluruh Indonesia!\n\n👉 Klik 'Beli Sekarang' sebelum stok promo habis!",
       "Bayangkan bangun tidur setiap pagi dengan kulit wajah yang kenyal, glowing, dan bebas noda kusam! 😍\n\nGlowSkin Serum hadir sebagai jawaban untuk kamu wanita aktif yang ingin hasil cepat tapi tetap aman. Diperkaya dengan bahan aktif konsentrasi tinggi yang merawat barrier kulitmu.\n\n🔥 Sudah terbukti oleh lebih dari 15.000+ wanita Indonesia.\n\nKlik selengkapnya untuk klaim voucher diskon 50% hari ini!"
@@ -616,12 +650,30 @@ export function generateCopywriterAI(input: CopywriterInput): CopywriterOutput {
   const hooks: string[] = Array.from({ length: 20 }, (_, i) => `${tonePrefix}Variasi Hook #${i + 1}: ${product} khusus ${targetCustomer} terbebas dari ${painPoint}!`);
   const headlines: string[] = Array.from({ length: 20 }, (_, i) => `${product} - Headline #${i + 1}: Solusi Terpercaya dengan ${usp}`);
 
+  const marketingAngles = [
+    { angleName: "Problem-Solving Angle", description: `Fokus ke mengatasi ${painPoint}`, exampleCopy: `Bosan dengan ${painPoint}? ${product} solusinya!` },
+    { angleName: "Social Proof Angle", description: "Berdasarkan ribuan review pembeli", exampleCopy: `Dipakai 10.000+ pelanggan puas karena ${usp}!` },
+    { angleName: "Urgency & Scarcity Angle", description: "Menekankan stok & diskon terbatas", exampleCopy: `Khusus hari ini! ${product} harga ${price} sebelum harga naik.` },
+    { angleName: "Value & Savings Angle", description: "Hemat uang dibanding opsi mahal lain", exampleCopy: `Hemat jutaan rupiah! Kualitas premium ${product} cuma ${price}.` },
+    { angleName: "Transformation Angle", description: "Perubahan nyata setelah pemakaian", exampleCopy: `Rasakan perubahan positif tanpa ${painPoint} dengan ${product}.` }
+  ];
+
+  const ctaVariations = [
+    "Beli Sekarang & Dapatkan Diskon Hemat!",
+    "Klaim Voucher Promo Spesial Hari Ini!",
+    "Klik Di Sini Untuk Bebas Dari Masalah!",
+    "Pesan via WhatsApp Sekarang Juga!",
+    "Ambil Promo Diskon Terbatas Sekarang!"
+  ];
+
   const result: CopywriterOutput = {
     id: `cp-${Date.now()}`,
     createdAt: new Date().toISOString(),
     input,
     hooks,
     headlines,
+    marketingAngles,
+    ctaVariations,
     primaryTextMetaAds: [`Meta Ad Copy #1 untuk ${product}`, `Meta Ad Copy #2 untuk ${product}`],
     landingPage: {
       heroSection: { badge: "PROMO LIMITED", h1: `${product} Solusi ${painPoint}`, subheadline: usp, ctaButton: "BELI SEKARANG" },

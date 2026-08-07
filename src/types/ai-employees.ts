@@ -131,8 +131,14 @@ export interface CopywriterOutput {
   id: string;
   createdAt: string;
   input: CopywriterInput;
-  hooks: string[]; // Min 20
-  headlines: string[]; // Min 20
+  hooks: string[]; // Min 10
+  headlines: string[]; // Min 10
+  marketingAngles: {
+    angleName: string;
+    description: string;
+    exampleCopy: string;
+  }[]; // Min 5
+  ctaVariations: string[]; // Min 5
   primaryTextMetaAds: string[];
   landingPage: LandingPageCopy;
   marketplaceDescription: string;

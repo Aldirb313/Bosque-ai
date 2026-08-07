@@ -22,7 +22,9 @@ import {
   Store,
   ArrowUpRight,
   History,
-  Check
+  Check,
+  ShieldAlert,
+  FlameKindling
 } from "lucide-react";
 import confetti from "canvas-confetti";
 
