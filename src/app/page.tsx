@@ -8,7 +8,9 @@ import CreativeDesignerView from "@/components/CreativeDesignerView";
 import VideoCreatorView from "@/components/VideoCreatorView";
 import AdsManagerView from "@/components/AdsManagerView";
 import SaaSAdminBillingAnalyticsView from "@/components/SaaSAdminBillingAnalyticsView";
-import AuthModal, { UserSession } from "@/components/AuthModal";
+import EnterpriseLoginPage from "@/components/EnterpriseLoginPage";
+import SecurityCenterView from "@/components/SecurityCenterView";
+import { EnterpriseUserSession } from "@/types/enterprise-auth";
 import { 
   Crown,
   Search,
@@ -21,19 +23,20 @@ import {
   ShieldCheck, 
   CreditCard,
   LogOut,
+  Shield,
   UserCheck
 } from "lucide-react";
 
 export default function SaaSMainDashboard() {
-  const [activeTab, setActiveTab] = useState<'orchestrator' | 'research' | 'copywriter' | 'designer' | 'video' | 'ads' | 'billing'>('orchestrator');
-  const [session, setSession] = useState<UserSession | null>(null);
+  const [activeTab, setActiveTab] = useState<'orchestrator' | 'research' | 'copywriter' | 'designer' | 'video' | 'ads' | 'billing' | 'security'>('orchestrator');
+  const [session, setSession] = useState<EnterpriseUserSession | null>(null);
   const [isMounted, setIsMounted] = useState(false);
 
   // Check saved session on mount
   useEffect(() => {
     setIsMounted(true);
     try {
-      const saved = localStorage.getItem("bosque_ai_session_v1");
+      const saved = localStorage.getItem("bosque_ai_enterprise_session_v4");
       if (saved) {
         setSession(JSON.parse(saved));
       }
@@ -42,10 +45,10 @@ export default function SaaSMainDashboard() {
     }
   }, []);
 
-  const handleLoginSuccess = (newSession: UserSession) => {
+  const handleLoginSuccess = (newSession: EnterpriseUserSession) => {
     setSession(newSession);
     try {
-      localStorage.setItem("bosque_ai_session_v1", JSON.stringify(newSession));
+      localStorage.setItem("bosque_ai_enterprise_session_v4", JSON.stringify(newSession));
     } catch {
       // ignore
     }
@@ -53,12 +56,12 @@ export default function SaaSMainDashboard() {
 
   const handleLogout = () => {
     setSession(null);
-    localStorage.removeItem("bosque_ai_session_v1");
+    localStorage.removeItem("bosque_ai_enterprise_session_v4");
   };
 
-  // If not mounted yet or user is not logged in, render Auth Modal
+  // If not mounted yet or user is not logged in, render Enterprise Login Page
   if (!isMounted || !session) {
-    return <AuthModal onLoginSuccess={handleLoginSuccess} />;
+    return <EnterpriseLoginPage onLoginSuccess={handleLoginSuccess} />;
   }
 
   return (
@@ -73,7 +76,7 @@ export default function SaaSMainDashboard() {
             <div className="flex items-center gap-2">
               <h1 className="font-extrabold text-white text-lg tracking-tight">BOSQUE AI</h1>
               <span className="px-2 py-0.5 rounded-full bg-gradient-to-r from-amber-500/20 via-pink-500/20 to-emerald-500/20 border border-amber-500/30 text-amber-300 font-mono text-[10px] font-bold">
-                AI OS V4.0 OPERATING SYSTEM
+                ENTERPRISE OS V4.0
               </span>
             </div>
             <p className="text-xs text-slate-400">Lu Jadi Bos. 5 Karyawan AI Lu Yang Kerja.</p>
@@ -147,6 +150,17 @@ export default function SaaSMainDashboard() {
           >
             <BarChart3 className="w-4 h-4" />
             AI-05 Ads
+          </button>
+          <button
+            onClick={() => setActiveTab('security')}
+            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition ${
+              activeTab === 'security'
+                ? "bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-600 text-white shadow-md shadow-purple-500/20"
+                : "text-slate-400 hover:text-slate-200"
+            }`}
+          >
+            <Shield className="w-4 h-4 text-emerald-400" />
+            Security Center
           </button>
           <button
             onClick={() => setActiveTab('billing')}
@@ -238,6 +252,7 @@ export default function SaaSMainDashboard() {
         {activeTab === 'designer' && <CreativeDesignerView />}
         {activeTab === 'video' && <VideoCreatorView />}
         {activeTab === 'ads' && <AdsManagerView />}
+        {activeTab === 'security' && <SecurityCenterView session={session} onLogoutAllDevices={handleLogout} />}
         {activeTab === 'billing' && <SaaSAdminBillingAnalyticsView />}
       </main>
 
