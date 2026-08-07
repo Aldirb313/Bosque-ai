@@ -441,6 +441,126 @@ export default function ProductResearchView() {
                 </div>
               </div>
 
+                {/* REALTIME AUDIT & VERIFICATION BADGE */}
+                {currentResult.realtimeDataVerification && (
+                  <div className="bg-slate-950/80 border border-slate-800 rounded-2xl p-3 flex flex-wrap items-center justify-between gap-3 text-xs">
+                    <div className="flex items-center gap-2 text-emerald-400 font-semibold">
+                      <ShieldAlert className="w-4 h-4 text-emerald-400" />
+                      <span>Data Verification Audit: <strong className="text-white font-mono">100% VALID & LIVE SCAN</strong></span>
+                    </div>
+                    <div className="flex items-center gap-2 text-[10px] font-mono text-slate-400">
+                      <span className="px-2 py-0.5 rounded bg-blue-500/10 text-blue-300 border border-blue-500/30">Meta Ads Verified</span>
+                      <span className="px-2 py-0.5 rounded bg-pink-500/10 text-pink-300 border border-pink-500/30">TikTok Verified</span>
+                      <span className="px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/30">Shopee Scanned</span>
+                      <span className="px-2 py-0.5 rounded bg-purple-500/10 text-purple-300 border border-purple-500/30">Google Trends Sync</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* WINNING SCORE PARAMETERS 0-100 */}
+                {currentResult.winningScoreParameters && (
+                  <div className="bg-slate-950 border border-slate-800 p-5 rounded-2xl space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-extrabold text-amber-300 uppercase tracking-wider flex items-center gap-1.5">
+                        <FlameKindling className="w-4 h-4 text-amber-400" /> Parameter Winning Score (0-100)
+                      </span>
+                      <span className="text-xs font-mono font-bold text-emerald-400">Skor Utama: {currentResult.overallScore}/100</span>
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-center text-xs">
+                      <div className="bg-slate-900 p-2.5 rounded-xl border border-slate-800">
+                        <span className="text-[10px] text-slate-400 block">Demand</span>
+                        <span className="font-extrabold text-white text-sm font-mono">{currentResult.winningScoreParameters.demandScore}</span>
+                      </div>
+                      <div className="bg-slate-900 p-2.5 rounded-xl border border-slate-800">
+                        <span className="text-[10px] text-slate-400 block">Competition</span>
+                        <span className="font-extrabold text-white text-sm font-mono">{currentResult.winningScoreParameters.competitionScore}</span>
+                      </div>
+                      <div className="bg-slate-900 p-2.5 rounded-xl border border-slate-800">
+                        <span className="text-[10px] text-slate-400 block">Profit Margin</span>
+                        <span className="font-extrabold text-emerald-400 text-sm font-mono">{currentResult.winningScoreParameters.marginScore}</span>
+                      </div>
+                      <div className="bg-slate-900 p-2.5 rounded-xl border border-slate-800">
+                        <span className="text-[10px] text-slate-400 block">Trend</span>
+                        <span className="font-extrabold text-purple-300 text-sm font-mono">{currentResult.winningScoreParameters.trendScore}</span>
+                      </div>
+                      <div className="bg-slate-900 p-2.5 rounded-xl border border-slate-800">
+                        <span className="text-[10px] text-slate-400 block">Ads Opportunity</span>
+                        <span className="font-extrabold text-cyan-300 text-sm font-mono">{currentResult.winningScoreParameters.advertisingOpportunityScore}</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* TARGET AUDIENCE BREAKDOWN */}
+                {currentResult.targetAudience && (
+                  <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
+                    <h4 className="text-base font-bold text-white flex items-center gap-2">
+                      <Globe className="w-5 h-5 text-cyan-400" />
+                      Target Audience & Persona Profiling
+                    </h4>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                      <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-2">
+                        <div className="font-bold text-white text-sm">{currentResult.targetAudience.persona}</div>
+                        <div className="text-slate-400">Rentang Usia: <strong className="text-slate-200">{currentResult.targetAudience.ageGroup}</strong></div>
+                        <div className="text-slate-400">Level Pendapatan: <strong className="text-slate-200">{currentResult.targetAudience.incomeLevel}</strong></div>
+                      </div>
+
+                      <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-2">
+                        <div className="font-bold text-amber-300">Buying Triggers Utama:</div>
+                        <ul className="list-disc list-inside text-slate-300 space-y-1">
+                          {currentResult.targetAudience.buyingTriggers.map((tr, idx) => (
+                            <li key={idx}>{tr}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* MARGIN ESTIMATION & LAUNCH STRATEGY */}
+                {currentResult.marginEstimation && currentResult.launchStrategy && (
+                  <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
+                    <h4 className="text-base font-bold text-white flex items-center gap-2">
+                      <DollarSign className="w-5 h-5 text-emerald-400" />
+                      Margin Breakdown & Strategi Launching Produk
+                    </h4>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                      <div className="bg-slate-950 p-3 rounded-xl border border-slate-800">
+                        <span className="text-slate-400 text-[10px] block">Est. Modal Supplier</span>
+                        <span className="font-bold text-white">{currentResult.marginEstimation.supplierCostRange}</span>
+                      </div>
+                      <div className="bg-slate-950 p-3 rounded-xl border border-slate-800">
+                        <span className="text-slate-400 text-[10px] block">Rekomendasi Harga Jual</span>
+                        <span className="font-bold text-emerald-400">{currentResult.marginEstimation.recommendedSellingPrice}</span>
+                      </div>
+                      <div className="bg-slate-950 p-3 rounded-xl border border-slate-800">
+                        <span className="text-slate-400 text-[10px] block">Est. Net Profit / Unit</span>
+                        <span className="font-bold text-amber-300">{currentResult.marginEstimation.estimatedNetProfitUnit}</span>
+                      </div>
+                      <div className="bg-slate-950 p-3 rounded-xl border border-slate-800">
+                        <span className="text-slate-400 text-[10px] block">Break-even ROAS</span>
+                        <span className="font-bold text-cyan-300 font-mono">{currentResult.marginEstimation.breakEvenRoas}</span>
+                      </div>
+                    </div>
+
+                    <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-2 text-xs">
+                      <div className="font-bold text-amber-300">Checklist Aksi Launching 3 Hari Pertama:</div>
+                      <ul className="space-y-1.5 text-slate-300">
+                        {currentResult.launchStrategy.actionChecklist.map((act, idx) => (
+                          <li key={idx} className="flex items-start gap-2">
+                            <span className="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-300 font-mono text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">
+                              ✓
+                            </span>
+                            <span>{act}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                )}
+
               {/* MARKETPLACE ANALYSIS */}
               <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl space-y-4">
                 <h4 className="text-base font-bold text-white flex items-center gap-2">

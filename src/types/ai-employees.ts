@@ -34,12 +34,43 @@ export interface WinningProductRecommendation {
   reasonWhyWinning: string;
 }
 
+export interface TargetAudienceBreakdown {
+  persona: string;
+  ageGroup: string;
+  incomeLevel: string;
+  painPoints: string[];
+  buyingTriggers: string[];
+}
+
+export interface MarginEstimationDetails {
+  supplierCostRange: string;
+  recommendedSellingPrice: string;
+  estimatedNetProfitUnit: string;
+  grossMarginPercentage: number;
+  breakEvenRoas: string;
+}
+
+export interface LaunchStrategyPlan {
+  phase1TestDays: string;
+  testBudgetMetaAds: string;
+  influencerAngleTikTok: string;
+  offerPackaging: string;
+  actionChecklist: string[];
+}
+
 export interface ProductResearchOutput {
   id: string;
   createdAt: string;
   input: ProductResearchInput;
   productName: string;
-  overallScore: number; // 0-100
+  overallScore: number; // 0-100 Winning Score
+  winningScoreParameters: {
+    demandScore: number; // 0-100
+    competitionScore: number; // 0-100
+    marginScore: number; // 0-100
+    trendScore: number; // 0-100
+    advertisingOpportunityScore: number; // 0-100
+  };
   details: {
     demandScore: number; // 0-100%
     competitionScore: number; // 0-100%
@@ -49,10 +80,20 @@ export interface ProductResearchOutput {
   };
   marketplaces: MarketplaceItem[];
   trendAnalysis: TrendSignal[];
+  targetAudience: TargetAudienceBreakdown;
+  marginEstimation: MarginEstimationDetails;
+  launchStrategy: LaunchStrategyPlan;
   aiRecommendation: string;
   estimatedProfitRange: string;
   winningAngles: string[];
   winningProducts: WinningProductRecommendation[];
+  realtimeDataVerification: {
+    metaAdsLibraryVerified: boolean;
+    tiktokTrendsVerified: boolean;
+    shopeeScanVerified: boolean;
+    googleTrendsVerified: boolean;
+    auditTimestamp: string;
+  };
 }
 
 // SUBSCRIPTION & CREDIT SYSTEM TYPES
