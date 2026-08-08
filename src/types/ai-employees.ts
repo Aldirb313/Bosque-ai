@@ -64,7 +64,7 @@ export interface ProductResearchOutput {
   input: ProductResearchInput;
   productName: string;
   overallScore: number; // 0-100 Winning Score
-  winningScoreParameters: {
+  winningScoreParameters?: {
     demandScore: number; // 0-100
     competitionScore: number; // 0-100
     marginScore: number; // 0-100
@@ -80,14 +80,14 @@ export interface ProductResearchOutput {
   };
   marketplaces: MarketplaceItem[];
   trendAnalysis: TrendSignal[];
-  targetAudience: TargetAudienceBreakdown;
-  marginEstimation: MarginEstimationDetails;
-  launchStrategy: LaunchStrategyPlan;
+  targetAudience?: TargetAudienceBreakdown;
+  marginEstimation?: MarginEstimationDetails;
+  launchStrategy?: LaunchStrategyPlan;
   aiRecommendation: string;
   estimatedProfitRange: string;
   winningAngles: string[];
   winningProducts: WinningProductRecommendation[];
-  realtimeDataVerification: {
+  realtimeDataVerification?: {
     metaAdsLibraryVerified: boolean;
     tiktokTrendsVerified: boolean;
     shopeeScanVerified: boolean;

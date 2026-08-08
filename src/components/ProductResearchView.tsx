@@ -195,47 +195,67 @@ export default function ProductResearchView() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">Kategori</label>
-                  <input
-                    type="text"
-                    placeholder="Contoh: Dapur / Beauty"
+                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">Kategori Produk</label>
+                  <select
                     value={input.category}
                     onChange={(e) => setInput({ ...input, category: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-blue-500 transition"
-                  />
+                    className="w-full px-3 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs focus:outline-none focus:border-blue-500 transition cursor-pointer"
+                  >
+                    <option value="Elektronik & Gadget">Elektronik & Gadget</option>
+                    <option value="Dapur & Peralatan Rumah">Dapur & Peralatan Rumah</option>
+                    <option value="Beauty & Skincare">Beauty & Skincare</option>
+                    <option value="Fashion & Aksesoris">Fashion & Aksesoris</option>
+                    <option value="Kesehatan & Baby Care">Kesehatan & Baby Care</option>
+                    <option value="Fitness & Olahraga">Fitness & Olahraga</option>
+                    <option value="Otomotif & Aksesoris">Otomotif & Aksesoris</option>
+                    <option value="Mainan & Hobi">Mainan & Hobi</option>
+                  </select>
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-slate-300 mb-1.5">Negara Target</label>
-                  <input
-                    type="text"
-                    placeholder="Contoh: Indonesia, US"
+                  <select
                     value={input.country}
                     onChange={(e) => setInput({ ...input, country: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-blue-500 transition"
-                  />
+                    className="w-full px-3 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs focus:outline-none focus:border-blue-500 transition cursor-pointer"
+                  >
+                    <option value="Indonesia">Indonesia 🇮🇩</option>
+                    <option value="Malaysia">Malaysia 🇲🇾</option>
+                    <option value="Singapore">Singapore 🇸🇬</option>
+                    <option value="United States">United States 🇺🇸</option>
+                    <option value="Global / Worldwide">Global / Worldwide 🌐</option>
+                  </select>
                 </div>
               </div>
 
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1.5">Target Market (Audiens)</label>
-                <input
-                  type="text"
-                  placeholder="Contoh: Mahasiswa, Ibu Muda, Pekerja Kantoran"
+                <select
                   value={input.targetMarket}
                   onChange={(e) => setInput({ ...input, targetMarket: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-blue-500 transition"
-                />
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs focus:outline-none focus:border-blue-500 transition cursor-pointer"
+                >
+                  <option value="Mahasiswa & Pekerja Muda">Mahasiswa & Pekerja Muda (18-28 thn)</option>
+                  <option value="Ibu Rumah Tangga & Keluarga">Ibu Rumah Tangga & Keluarga (25-45 thn)</option>
+                  <option value="Pekerja Kantoran & Profesional">Pekerja Kantoran & Profesional (22-40 thn)</option>
+                  <option value="Pecinta Fitness & Olahraga">Pecinta Fitness & Olahraga</option>
+                  <option value="Penggemar Beauty & Skincare">Penggemar Beauty & Skincare</option>
+                  <option value="Semua Segmen Umur">Semua Segmen Umur</option>
+                </select>
               </div>
 
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1.5">Harga Target Jual</label>
-                <input
-                  type="text"
-                  placeholder="Contoh: Rp 189.000"
+                <select
                   value={input.targetPrice}
                   onChange={(e) => setInput({ ...input, targetPrice: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder-slate-500 text-xs focus:outline-none focus:border-blue-500 transition"
-                />
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs focus:outline-none focus:border-blue-500 transition cursor-pointer"
+                >
+                  <option value="Dibawah Rp 50.000">Dibawah Rp 50.000 (Low Ticket)</option>
+                  <option value="Rp 50.000 - Rp 150.000">Rp 50.000 - Rp 150.000 (Mass Market)</option>
+                  <option value="Rp 150.000 - Rp 300.000">Rp 150.000 - Rp 300.000 (Sweet Spot)</option>
+                  <option value="Rp 300.000 - Rp 750.000">Rp 300.000 - Rp 750.000 (Medium Ticket)</option>
+                  <option value="Diatas Rp 750.000">Diatas Rp 750.000 (High Ticket)</option>
+                </select>
               </div>
 
               <button

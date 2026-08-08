@@ -189,7 +189,7 @@ export default function SaaSMainDashboard() {
               <div className="text-xs font-bold text-white leading-tight flex items-center gap-1">
                 {session.name}
                 <span className="px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 text-[9px] font-mono">
-                  {session.loginMethod}
+                  {session.loginMethod || 'Enterprise'}
                 </span>
               </div>
               <div className="text-[10px] text-slate-400 leading-tight">{session.role}</div>

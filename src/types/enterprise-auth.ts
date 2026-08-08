@@ -15,6 +15,7 @@ export interface EnterpriseUserSession {
   };
   twoFactorEnabled: boolean;
   avatarUrl: string;
+  loginMethod?: string;
   lastLoginIp: string;
   lastLoginLocation: string;
 }
